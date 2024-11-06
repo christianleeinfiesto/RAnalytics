@@ -1,0 +1,8 @@
+---
+title: "RWorksheet#5"
+author: "Barrientos, Delfin, Infiesto"
+date: "2024-11-06"
+output: pdf_document
+---
+
+
