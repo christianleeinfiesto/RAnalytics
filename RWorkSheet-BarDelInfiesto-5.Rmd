@@ -1,0 +1,128 @@
+---
+title: "RWorksheet#5"
+author: "Barrientos, Delfin, Infiesto"
+date: "2024-11-06"
+output: pdf_document
+---
+#Extracting TV Shows Reviews
+```{r}
+#1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the
+#tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
+#It will also include the number of user reviews and the number of critic reviews, as well as the popularity
+#rating for each tv shows.
+
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(tidyr)
+library(httr)
+
+
+url <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
+session <- bow(url, user_agent = "Educational Purposes Only")
+
+
+page <- scrape(session)
+
+
+titles <- page %>%
+  html_nodes('.ipc-title__text') %>%
+  html_text()
+
+ranks <- page %>%
+  html_nodes('a.ipc-title-link-wrapper') %>%
+  html_text() %>%
+  gsub("[^0-9]", "", .)
+
+
+links <- page %>%
+  html_nodes('a.ipc-title-link-wrapper') %>%
+  html_attr('href') %>%
+  paste0("https://www.imdb.com", .)
+
+titles <- titles[!titles %in% c("IMDb Charts", "Top 250 TV Shows")]
+titles <- titles[1:50]
+ranks <- ranks[1:50]
+links <- links[1:50]
+
+
+rank_title <- data.frame(
+  rank = ranks,
+  title = titles,
+  link = links,
+  stringsAsFactors = FALSE
+)
+
+
+scrape_show_details <- function(show_url) {
+  Sys.sleep(1)  # Be polite, avoid overwhelming IMDb's servers
+  page <- tryCatch(read_html(show_url), error = function(e) return(NULL))
+  
+  if (is.null(page)) return(NULL)
+  
+  rating <- page %>%
+    html_node('.sc-d541859f-1 imUuxf') %>%
+    html_text(trim = TRUE)
+
+  votes <- page %>%
+    html_node('div[class*="AggregateRatingButton__TotalRatingAmount"]') %>%
+    html_text(trim = TRUE)
+
+  episodes <- page %>%
+    html_node('a[href*="episodes?"]') %>%
+    html_text(trim = TRUE)
+  
+  year <- page %>%
+    html_node('span[class*="TitleBlockMetaData__ListItemText"]') %>%
+    html_text(trim = TRUE)
+  
+  user_reviews <- page %>%
+    html_node('span[data-testid="reviews-header"]') %>%
+    html_text(trim = TRUE)
+  
+  critic_reviews <- page %>%
+    html_node('span[class*="score"]') %>%
+    html_text(trim = TRUE)
+  
+  popularity <- page %>%
+    html_node('div[class*="trending-list-rank-item__position"]') %>%
+    html_text(trim = TRUE)
+  
+  return(data.frame(
+    rating = ifelse(is.na(rating), "N/A", rating),
+    votes = ifelse(is.na(votes), "N/A", votes),
+    episodes = ifelse(is.na(episodes), "N/A", episodes),
+    year = ifelse(is.na(year), "N/A", year),
+    user_reviews = ifelse(is.na(user_reviews), "N/A", user_reviews),
+    critic_reviews = ifelse(is.na(critic_reviews), "N/A", critic_reviews),
+    popularity = ifelse(is.na(popularity), "N/A", popularity),
+    stringsAsFactors = FALSE
+  ))
+}
+
+
+show_details <- lapply(rank_title$link, function(link_url) {
+  scrape_show_details(link_url)
+})
+
+
+show_details <- Filter(Negate(is.null), show_details)
+final_data <- do.call(rbind, show_details)
+
+
+final_result <- cbind(rank_title, final_data)
+
+
+write.csv(final_result, file = "top_50_tv_shows_imdb.csv", row.names = FALSE)
+
+
+final_result
+
+View(final_result)
+
+
+```
+
+
+
