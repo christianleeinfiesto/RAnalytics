@@ -6,10 +6,8 @@ output: pdf_document
 ---
 #Extracting TV Shows Reviews
 ```{r}
-#1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the
-#tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
-#It will also include the number of user reviews and the number of critic reviews, as well as the popularity
-#rating for each tv shows.
+#1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
+#It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
 
 
 library(dplyr)
@@ -62,19 +60,20 @@ scrape_show_details <- function(show_url) {
   if (is.null(page)) return(NULL)
   
   rating <- page %>%
-    html_node('.sc-d541859f-1 imUuxf') %>%
+    html_node('.ipc-rating-star--rating') %>%
     html_text(trim = TRUE)
 
   votes <- page %>%
-    html_node('div[class*="AggregateRatingButton__TotalRatingAmount"]') %>%
+    html_node('div.sc-7ab21ed2-3.dPVcnq') %>%
     html_text(trim = TRUE)
+    clean_votes <- gsub('[()]', '', votes)
 
   episodes <- page %>%
     html_node('a[href*="episodes?"]') %>%
     html_text(trim = TRUE)
   
   year <- page %>%
-    html_node('span[class*="TitleBlockMetaData__ListItemText"]') %>%
+    html_node('span.sc-8c396aa2-2') %>%
     html_text(trim = TRUE)
   
   user_reviews <- page %>%
@@ -86,7 +85,7 @@ scrape_show_details <- function(show_url) {
     html_text(trim = TRUE)
   
   popularity <- page %>%
-    html_node('div[class*="trending-list-rank-item__position"]') %>%
+    html_node('.sc-39d285cf-1 dxqvqi') %>%
     html_text(trim = TRUE)
   
   return(data.frame(
@@ -123,6 +122,8 @@ View(final_result)
 
 
 ```
+
+
 
 
 
