@@ -120,10 +120,4 @@ final_result
 
 View(final_result)
 
-
 ```
-
-
-
-
-
