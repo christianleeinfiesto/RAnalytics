@@ -19,36 +19,36 @@ url <- "https://www.imdb.com/chart/toptv/?sort=rank%2Casc"
 session <- bow(url, user_agent = "Educational")
 session
 
-title_list <- read_html(url) %>%
+title_elements <- read_html(url) %>%
   html_nodes('.ipc-title__text') %>%
   html_text()
 
-title_list_sub <- as.data.frame(title_list[3:27], stringsAsFactors = FALSE)
-colnames(title_list_sub) <- "ranks"
+titles_df <- as.data.frame(title_elements[3:52], stringsAsFactors = FALSE)
+colnames(titles_df) <- "Ranked_Titles"
 
-split_df <- strsplit(as.character(title_list_sub$ranks), "\\.", fixed = FALSE)
-split_df <- data.frame(do.call(rbind, split_df), stringsAsFactors = FALSE)
+split_titles <- strsplit(as.character(titles_df$Ranked_Titles), "\\.", fixed = FALSE)
+titles_split_df <- data.frame(do.call(rbind, split_titles), stringsAsFactors = FALSE)
 
-colnames(split_df) <- c("rank", "title")
-split_df <- split_df %>% select(rank, title)
-split_df$title <- trimws(split_df$title)
+colnames(titles_split_df) <- c("Rank", "Title")
+titles_split_df <- titles_split_df %>% select(Rank, Title)
+titles_split_df$Title <- trimws(titles_split_df$Title)
 
-rank_title <- split_df
+rank_title <- titles_split_df
 
-rating_ls <- read_html(url) %>%
+rating_elements <- read_html(url) %>%
   html_nodes('.ipc-rating-star--rating') %>%
   html_text()
 
-voter_ls <- read_html(url) %>%
+voter_elements <- read_html(url) %>%
   html_nodes('.ipc-rating-star--voteCount') %>%
   html_text()
-clean_votes <- gsub('[()]', '', voter_ls)
+voters_cleaned <- gsub('[()]', '', voter_elements)
 
-eps_ls <- read_html(url) %>%
+episode_elements <- read_html(url) %>%
   html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
   html_text()
-clean_eps <- gsub('[eps]', '', eps_ls)
-num_eps <- as.numeric(clean_eps)
+episodes_cleaned <- gsub('[eps]', '', episode_elements)
+episodes_count <- as.numeric(episodes_cleaned)
 
 years <- read_html(url) %>%
   html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(1)') %>%
@@ -57,49 +57,55 @@ years <- read_html(url) %>%
 top_tv_shows <- data.frame(
   Rank = rank_title[,1],
   Title = rank_title[,2],
-  Rating = rating_ls,
-  Voters = clean_votes,
-  Episodes = num_eps,
+  Rating = rating_elements,
+  Voters = voters_cleaned,
+  Episodes = episodes_count,
   Year = years
 )
 
 home_link <- 'https://www.imdb.com/chart/toptv/'
-main_page <- read_html(home_link)
+main_page_html <- read_html(home_link)
 
-links <- main_page %>%
+show_links <- main_page_html %>%
   html_nodes("a.ipc-title-link-wrapper") %>%
   html_attr("href")
 
-show_data <- lapply(links, function(link) {
+show_details_list <- lapply(show_links, function(link) {
   complete_link <- paste0("https://imdb.com", link)
-
-  usrv_link <- read_html(complete_link)
-  usrv_link_page <- usrv_link %>% 
+  
+  show_page <- read_html(complete_link)
+  review_link <- show_page %>% 
     html_nodes('a.isReview') %>% 
     html_attr("href")
   
-  critic <- usrv_link %>%
+  critic_reviews <- show_page %>%
     html_nodes("span.score") %>%
     html_text()
-  critic_df <- data.frame(Critic_Reviews = critic[2], stringsAsFactors = FALSE)
+  critic_df <- data.frame(Critic_Reviews = critic_reviews[2], stringsAsFactors = FALSE)
   
-  pop_rating <- usrv_link %>%
+  popularity_score <- show_page %>%
     html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
     html_text()
   
-  usrv <- read_html(paste0("https://imdb.com", usrv_link_page[1]))
-  usrv_count <- usrv %>%
+  user_reviews_page <- read_html(paste0("https://imdb.com", review_link[1]))
+  user_reviews_count <- user_reviews_page %>%
     html_nodes('[data-testid="tturv-total-reviews"]') %>%
     html_text()
-
-  return(data.frame(Show_Link = complete_link, User_Reviews = usrv_count, Critic = critic_df, Popularity_Rating = pop_rating)) 
+  
+  return(data.frame(
+    Show_Link = complete_link,
+    User_Reviews = user_reviews_count,
+    Critic_Reviews = critic_df,
+    Popularity_Rating = popularity_score
+  )) 
 })
 
-show_url_df <- do.call(rbind, show_data)
-print(show_url_df)
+show_details_df <- do.call(rbind, show_details_list)
 
-shows <- cbind(top_tv_shows, show_url_df)
-shows
+final_shows_df <- cbind(top_tv_shows, show_details_df)
+
+print(final_shows_df)
+View(final_shows_df)
 
 ```
 
