@@ -14,6 +14,7 @@ library(polite)
 library(httr)
 library(rvest)
 library(dplyr)
+library(ggplot2)
 
 url <- "https://www.imdb.com/chart/toptv/?sort=rank%2Casc"
 session <- bow(url, user_agent = "Educational")
@@ -107,6 +108,33 @@ final_shows_df <- cbind(top_tv_shows, show_details_df)
 print(final_shows_df)
 View(final_shows_df)
 
-```
 
+#3. Create a time series graph for the tv shows released by year. Which year has the most number of tv shows released? 
+
+shows_by_year <- top_tv_shows %>%
+  group_by(Year) %>%
+  summarise(Count = n()) %>%
+  arrange(Year)
+
+ggplot(shows_by_year, aes(x = Year, y = Count, group = 1)) +
+  geom_line(color = "black", size = 1) +
+  geom_point(color = "red", size = 3) +
+  labs(
+    title = "Number of TV Shows Released by Year",
+    x = "Year",
+    y = "Number of TV Shows"
+  ) +
+  theme_minimal()
+
+max_shows_year <- shows_by_year %>%
+  filter(Count == max(Count))
+
+print(max_shows_year)
+
+
+
+
+
+
+```
 
