@@ -1,0 +1,25 @@
+---
+title: "RWorksheet#5B"
+author: "Barrientos, Delfin, Infiesto"
+date: "2024-11-20"
+output: pdf_document
+---
+Amazon
+```{r}
+library(rvest)
+library(httr)
+library(polite)
+library(dplyr)
+
+categories <- c("Category1", "Category2", "Category3", "Category4", "Category5")
+results <- list()
+
+url <- "https://www.amazon.com/b?node=16225007011"
+session <- bow(url)
+
+webpage <- read_html(url)
+
+
+
+```
+
