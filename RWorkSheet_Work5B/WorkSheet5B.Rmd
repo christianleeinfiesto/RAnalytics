@@ -12,26 +12,32 @@ library(httr)
 library(polite)
 library(dplyr)
 
-url <- "https://www.amazon.com/s?i=computers-intl-ship"
+urls <- c(
+  "https://www.amazon.com/s?k=computer&i=computers-intl-ship&crid=3BTBG0KTRCGIC&sprefix=computer%2Ccomputers-intl-ship%2C290&ref=nb_sb_noss_2", 
+  "https://www.amazon.com/s?k=computer&i=computers-intl-ship&page=2&crid=3BTBG0KTRCGIC&qid=1732104928&sprefix=computer%2Ccomputers-intl-ship%2C290&ref=sr_pg_2")
+
+
+  webpage <- read_html(urls[1])  
+
 
 product_ratings <- webpage %>%
-  html_nodes(".a-icon-alt") %>%
+  html_nodes(".a-size-base") %>%
   html_text()
 
 product_reviewers <- webpage %>%
-  html_nodes(".a-size-base") %>%
+  html_nodes(".a-profile-name") %>%
   html_text()
 
 product_date <- webpage %>% 
-  html_nodes(".a-size-base") %>%
+  html_nodes(".review-date") %>%
   html_text()
 
 product_individual_rating <- webpage %>%
-  html_nodes(".profile-content") %>%
+  html_nodes(".a-icon-alt") %>%
   html_text()
 
 product_text_review <- webpage %>%
-  html_nodes(".a-size-base") %>%
+  html_nodes(".review-text-content span") %>%
   html_text()
 
 product_title_of_review <- webpage %>%
@@ -39,21 +45,44 @@ product_title_of_review <- webpage %>%
   html_text()
 
 product_verified_purchase <- webpage %>%
-  html_nodes(".a-link-normal") %>%
+  html_nodes(".a-link-normal") %>% 
   html_text()
+cat("Reviewers: ", length(product_reviewers), "\n")
+cat("Ratings: ", length(product_ratings), "\n")
+cat("Dates: ", length(product_date), "\n")
+cat("Text Reviews: ", length(product_text_review), "\n")
+cat("Titles: ", length(product_title_of_review), "\n")
+cat("Verified Purchase: ", length(product_verified_purchase), "\n")
 
+min_length <- min(
+  length(product_reviewers),
+  length(product_ratings),
+  length(product_date),
+  length(product_text_review),
+  length(product_title_of_review),
+  length(product_verified_purchase)
+)
+
+product_reviewers <- product_reviewers[1:min_length]
+product_ratings <- product_ratings[1:min_length]
+product_date <- product_date[1:min_length]
+product_text_review <- product_text_review[1:min_length]
+product_title_of_review <- product_title_of_review[1:min_length]
+product_verified_purchase <- product_verified_purchase[1:min_length]
 
 df <- data.frame(
-  Reviews = product_reviewers,
+  Reviewers = product_reviewers,
   Ratings = product_ratings,
   Date = product_date,
   Individual_Rating = product_individual_rating,
   Text_Review = product_text_review,
   Title_of_Review = product_title_of_review,
-  Verified_Purchase = product_verified_purchase,
+  Verified_Purchase = ifelse(grepl("Verified Purchase", product_verified_purchase), "Yes", "No"),
   stringsAsFactors = FALSE
 )
 
+
+View(df)
 print(head(df))
 
 ```
