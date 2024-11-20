@@ -5,21 +5,56 @@ date: "2024-11-20"
 output: pdf_document
 ---
 Amazon
+Category #1: Computers
 ```{r}
 library(rvest)
 library(httr)
 library(polite)
 library(dplyr)
 
-categories <- c("Category1", "Category2", "Category3", "Category4", "Category5")
-results <- list()
+url <- "https://www.amazon.com/s?i=computers-intl-ship"
 
-url <- "https://www.amazon.com/b?node=16225007011"
-session <- bow(url)
+product_ratings <- webpage %>%
+  html_nodes(".a-icon-alt") %>%
+  html_text()
 
-webpage <- read_html(url)
+product_reviewers <- webpage %>%
+  html_nodes(".a-size-base") %>%
+  html_text()
+
+product_date <- webpage %>% 
+  html_nodes(".a-size-base") %>%
+  html_text()
+
+product_individual_rating <- webpage %>%
+  html_nodes(".profile-content") %>%
+  html_text()
+
+product_text_review <- webpage %>%
+  html_nodes(".a-size-base") %>%
+  html_text()
+
+product_title_of_review <- webpage %>%
+  html_nodes(".a-letter-space") %>%
+  html_text()
+
+product_verified_purchase <- webpage %>%
+  html_nodes(".a-link-normal") %>%
+  html_text()
 
 
+df <- data.frame(
+  Reviews = product_reviewers,
+  Ratings = product_ratings,
+  Date = product_date,
+  Individual_Rating = product_individual_rating,
+  Text_Review = product_text_review,
+  Title_of_Review = product_title_of_review,
+  Verified_Purchase = product_verified_purchase,
+  stringsAsFactors = FALSE
+)
+
+print(head(df))
 
 ```
 
