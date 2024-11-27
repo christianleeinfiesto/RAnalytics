@@ -2,10 +2,11 @@
 title: "RWorksheet#5B"
 author: "Barrientos, Delfin, Infiesto"
 date: "2024-11-20"
-output: pdf_document
-latex_engine: luaTex
-header-includes:
-  - \usepackage{fontspec}
+output:
+  pdf_document:
+    latex_engine: xelatex  
+fontsize: 11pt
+geometry: margin=1in
 ---
 Amazon Reviews 
 Refrigerator
@@ -187,7 +188,7 @@ scrape_reviews <- function(url) {
   
   
   if (min_length > 0) {
-    data.frame(
+   return(data.frame(
       Product_Name = product_name[1:min_length],
       Reviewers = product_reviewers[1:min_length],
       Date = product_date[1:min_length],
@@ -196,7 +197,7 @@ scrape_reviews <- function(url) {
       Title_of_Review = product_title_of_review[1:min_length],
       Verified_Purchase = verified_purchase[1:min_length],
       stringsAsFactors = FALSE
-    )
+    )[1:min(20, nrow(data.frame)), ])
   } else {
     NULL
   }
