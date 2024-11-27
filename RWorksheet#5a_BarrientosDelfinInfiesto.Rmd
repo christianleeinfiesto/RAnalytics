@@ -1,0 +1,46 @@
+---
+title: "RWorksheet#5"
+author: "Barrientos, Delfin, Infiesto"
+date: "2024-11-06"
+output: pdf_document
+---
+```{r}
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+library(stringr)
+```
+
+```{r}
+urls <- c(
+  "https://www.amazon.com/s?i=specialty-aps&bbn=16225009011&rh=n%3A%2116225009011%2Cn%3A281407&ref=nav_em__nav_desktop_sa_intl_accessories_and_supplies_0_2_5_2",
+  "https://www.amazon.com/s?i=specialty-aps&bbn=16225007011&rh=n%3A16225007011%2Cn%3A172456&ref=nav_em__nav_desktop_sa_intl_computer_accessories_and_peripherals_0_2_6_2",
+  "https://www.amazon.com/s?i=specialty-aps&bbn=16225006011&rh=n%3A%2116225006011%2Cn%3A11058281&ref=nav_em__nav_desktop_sa_intl_makeup_0_2_11_2",
+  "https://www.amazon.com/s?i=specialty-aps&bbn=4954955011&rh=n%3A4954955011%2Cn%3A%212617942011%2Cn%3A2747968011&ref=nav_em__nav_desktop_sa_intl_painting_drawing_supplies_0_2_8_2",
+  "https://www.amazon.com/s?i=specialty-aps&bbn=16225018011&rh=n%3A7141123011%2Cn%3A16225018011%2Cn%3A1040660&ref=nav_em__nav_desktop_sa_intl_clothing_0_2_12_2"
+)
+session <- bow(url,
+               user_agent = "Student's Demo Educational")
+session
+
+session_page <- scrape(session)
+
+div_elements <- html_nodes(session_page,'div.sg-col-4-of-24.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.s-widget-spacing-small.sg-col-4-of-20')
+```
+
+
+```{r}
+descriptions <- character()
+prices <- character()
+ratings <- character()
+reviews <- character()
+
+```
+
+
+
+
+
+
+
