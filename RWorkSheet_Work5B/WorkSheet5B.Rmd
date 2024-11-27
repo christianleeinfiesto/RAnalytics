@@ -5,85 +5,106 @@ date: "2024-11-20"
 output: pdf_document
 ---
 Amazon
-Category #1: Computers
 ```{r}
 library(rvest)
 library(httr)
 library(polite)
 library(dplyr)
+library(stringr)
+
 
 urls <- c(
-  "https://www.amazon.com/s?k=computer&i=computers-intl-ship&crid=3BTBG0KTRCGIC&sprefix=computer%2Ccomputers-intl-ship%2C290&ref=nb_sb_noss_2", 
-  "https://www.amazon.com/s?k=computer&i=computers-intl-ship&page=2&crid=3BTBG0KTRCGIC&qid=1732104928&sprefix=computer%2Ccomputers-intl-ship%2C290&ref=sr_pg_2")
-
-
-  webpage <- read_html(urls[1])  
-
-
-product_ratings <- webpage %>%
-  html_nodes(".a-size-base") %>%
-  html_text()
-
-product_reviewers <- webpage %>%
-  html_nodes(".a-profile-name") %>%
-  html_text()
-
-product_date <- webpage %>% 
-  html_nodes(".review-date") %>%
-  html_text()
-
-product_individual_rating <- webpage %>%
-  html_nodes(".a-icon-alt") %>%
-  html_text()
-
-product_text_review <- webpage %>%
-  html_nodes(".review-text-content span") %>%
-  html_text()
-
-product_title_of_review <- webpage %>%
-  html_nodes(".a-letter-space") %>%
-  html_text()
-
-product_verified_purchase <- webpage %>%
-  html_nodes(".a-link-normal") %>% 
-  html_text()
-cat("Reviewers: ", length(product_reviewers), "\n")
-cat("Ratings: ", length(product_ratings), "\n")
-cat("Dates: ", length(product_date), "\n")
-cat("Text Reviews: ", length(product_text_review), "\n")
-cat("Titles: ", length(product_title_of_review), "\n")
-cat("Verified Purchase: ", length(product_verified_purchase), "\n")
-
-min_length <- min(
-  length(product_reviewers),
-  length(product_ratings),
-  length(product_date),
-  length(product_text_review),
-  length(product_title_of_review),
-  length(product_verified_purchase)
+  "https://www.amazon.com/s?url=search-alias%3Dcomputers-intl-ship", 
+  "https://www.amazon.com/s?k=Make+up&i=beauty-intl-ship",
+  "https://www.amazon.com/s?i=automotive-intl-ship",
+  "https://www.amazon.com/s?i=electronics-intl-ship", 
+  "https://www.amazon.com/s?k=gaming+mouse"
 )
 
-product_reviewers <- product_reviewers[1:min_length]
-product_ratings <- product_ratings[1:min_length]
-product_date <- product_date[1:min_length]
-product_text_review <- product_text_review[1:min_length]
-product_title_of_review <- product_title_of_review[1:min_length]
-product_verified_purchase <- product_verified_purchase[1:min_length]
+  session <- bow(url,
+               user_agent = "Educational")
+session
+all_data <- list()
 
-df <- data.frame(
-  Reviewers = product_reviewers,
-  Ratings = product_ratings,
-  Date = product_date,
-  Individual_Rating = product_individual_rating,
-  Text_Review = product_text_review,
-  Title_of_Review = product_title_of_review,
-  Verified_Purchase = ifelse(grepl("Verified Purchase", product_verified_purchase), "Yes", "No"),
-  stringsAsFactors = FALSE
-)
+for (i in seq_along(urls)) {
+  # Fetch and parse the webpage
+  webpage <- read_html(urls[i])
+  
+  # Extract product data
+  product_ratings <- webpage %>%
+    html_nodes(".a-icon-alt") %>%
+    html_text()
 
+  product_reviewers <- webpage %>%
+    html_nodes(".a-profile-name") %>%
+    html_text()
 
-View(df)
-print(head(df))
+  product_date <- webpage %>% 
+    html_nodes(".review-date") %>%
+    html_text()
+
+  product_individual_rating <- webpage %>%
+    html_nodes(".a-icon-alt") %>%
+    html_text()
+
+  product_text_review <- webpage %>%
+    html_nodes(".review-text-content span") %>%
+    html_text()
+
+  product_title_of_review <- webpage %>%
+    html_nodes(".review-title span") %>%
+    html_text()
+
+  product_verified_purchase <- webpage %>%
+    html_nodes(".review-format-strip") %>% 
+    html_text()
+  
+  # Synchronize lengths
+  min_length <- min(
+    length(product_reviewers),
+    length(product_ratings),
+    length(product_date),
+    length(product_text_review),
+    length(product_title_of_review),
+    length(product_verified_purchase)
+  )
+  
+  if (min_length > 0) {
+    product_reviewers <- product_reviewers[1:min_length]
+    product_ratings <- product_ratings[1:min_length]
+    product_date <- product_date[1:min_length]
+    product_text_review <- product_text_review[1:min_length]
+    product_title_of_review <- product_title_of_review[1:min_length]
+    product_verified_purchase <- product_verified_purchase[1:min_length]
+    
+    # Store data in a dataframe
+    df <- data.frame(
+      Reviewers = product_reviewers,
+      Ratings = product_ratings,
+      Date = product_date,
+      Individual_Rating = product_individual_rating[1:min_length],
+      Text_Review = product_text_review,
+      Title_of_Review = product_title_of_review,
+      Verified_Purchase = ifelse(grepl("Verified Purchase", product_verified_purchase), "Yes", "No"),
+      stringsAsFactors = FALSE
+    )
+    
+    # Append dataframe to the list
+    all_data[[i]] <- df
+  } else {
+    cat("No data found for URL:", urls[i], "\n")
+  }
+}
+
+# Combine all dataframes into one
+final_df <- bind_rows(all_data)
+
+# View the data
+View(final_df)
+print(head(final_df))
 
 ```
+
+
+
 
