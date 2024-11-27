@@ -3,108 +3,527 @@ title: "RWorksheet#5B"
 author: "Barrientos, Delfin, Infiesto"
 date: "2024-11-20"
 output: pdf_document
+latex_engine: luaTex
+header-includes:
+  - \usepackage{fontspec}
 ---
-Amazon
+Amazon Reviews 
+Refrigerator
 ```{r}
 library(rvest)
 library(httr)
-library(polite)
 library(dplyr)
-library(stringr)
-
+library(polite)
 
 urls <- c(
-  "https://www.amazon.com/s?url=search-alias%3Dcomputers-intl-ship", 
-  "https://www.amazon.com/s?k=Make+up&i=beauty-intl-ship",
-  "https://www.amazon.com/s?i=automotive-intl-ship",
-  "https://www.amazon.com/s?i=electronics-intl-ship", 
-  "https://www.amazon.com/s?k=gaming+mouse"
+  "https://www.amazon.com/Silonn-Countertop-Portable-Machine-Self-Cleaning/dp/B0BXXKFJK2",
+  "https://www.amazon.com/EUHOMY-Countertop-Machine-Auto-Cleaning-Portable/dp/B0BWHZJHPL",
+  "https://www.amazon.com/Silonn-Countertop-Portable-Self-cleaning-Bullet-shaped/dp/B08ZYJ8CRX",
+  "https://www.amazon.com/EUHOMY-Countertop-Portable-Machine-Auto-Cleaning/dp/B0D3GV1VQS",
+  "https://www.amazon.com/Countertop-Chewable-35-5Lbs-Machine-Self-Cleaning/dp/B0DBHN7WSN",
+  "https://www.amazon.com/EUHOMY-Countertop-Removable-Auto-Cleaning-Portable/dp/B0C32SGKMJ",
+  "https://www.amazon.com/Upstreman-Adjustable-Thermostat-Refrigerator-Black-BR321/dp/B09RWFZTWW",
+  "https://www.amazon.com/Silonn-Countertop-One-Click-Operation-Self-Cleaning/dp/B0CD2C8M4D",
+  "https://www.amazon.com/ecozy-Portable-Countertop-Self-Cleaning-Standing/dp/B0B498C643",
+  "https://www.amazon.com/Countertop-Silonn-Chewable-Self-Cleaning-Function/dp/B0C9SWH3RC"
 )
-
-  session <- bow(url,
-               user_agent = "Educational")
-session
-all_data <- list()
-
-for (i in seq_along(urls)) {
-  # Fetch and parse the webpage
-  webpage <- read_html(urls[i])
+#This is function from GPT, and I understand its function is to make the website think that the request is coming from a browser not from the bot. 
+headers <- httr::add_headers(
+  `User-Agent` = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+)
+scrape_reviews <- function(url) {
   
-  # Extract product data
-  product_ratings <- webpage %>%
-    html_nodes(".a-icon-alt") %>%
-    html_text()
+  webpage <- httr::GET(url, headers) %>% read_html()
 
+  
+  product_name <- webpage %>%
+    html_nodes("#productTitle") %>%
+    html_text(trim = TRUE)
+  
   product_reviewers <- webpage %>%
-    html_nodes(".a-profile-name") %>%
-    html_text()
-
+    html_nodes("span.a-profile-name") %>%
+    html_text(trim = TRUE)
+  
+  
   product_date <- webpage %>% 
     html_nodes(".review-date") %>%
-    html_text()
-
+    html_text(trim = TRUE)
+  
+  
   product_individual_rating <- webpage %>%
     html_nodes(".a-icon-alt") %>%
-    html_text()
-
+    html_text(trim = TRUE)
+  
+  
   product_text_review <- webpage %>%
     html_nodes(".review-text-content span") %>%
-    html_text()
-
+    html_text(trim = TRUE)
+  
+  
   product_title_of_review <- webpage %>%
     html_nodes(".review-title span") %>%
-    html_text()
-
-  product_verified_purchase <- webpage %>%
-    html_nodes(".review-format-strip") %>% 
-    html_text()
+    html_text(trim = TRUE)
   
-  # Synchronize lengths
+  
+  verified_purchase <- webpage %>%
+    html_nodes(".review-data span.a-size-mini.a-color-state.a-text-bold") %>%
+    html_text(trim = TRUE)
+  
+  
+  verified_purchase <- ifelse(verified_purchase == "Verified Purchase", "Yes", "No")
+  
+  
   min_length <- min(
     length(product_reviewers),
-    length(product_ratings),
     length(product_date),
+    length(product_individual_rating),
     length(product_text_review),
     length(product_title_of_review),
-    length(product_verified_purchase)
+    length(verified_purchase)
   )
   
+  
   if (min_length > 0) {
-    product_reviewers <- product_reviewers[1:min_length]
-    product_ratings <- product_ratings[1:min_length]
-    product_date <- product_date[1:min_length]
-    product_text_review <- product_text_review[1:min_length]
-    product_title_of_review <- product_title_of_review[1:min_length]
-    product_verified_purchase <- product_verified_purchase[1:min_length]
-    
-    # Store data in a dataframe
-    df <- data.frame(
-      Reviewers = product_reviewers,
-      Ratings = product_ratings,
-      Date = product_date,
+    return(data.frame(
+      Product_Name = product_name[1:min_length],
+      Reviewers = product_reviewers[1:min_length],
+      Date = product_date[1:min_length],
       Individual_Rating = product_individual_rating[1:min_length],
-      Text_Review = product_text_review,
-      Title_of_Review = product_title_of_review,
-      Verified_Purchase = ifelse(grepl("Verified Purchase", product_verified_purchase), "Yes", "No"),
+      Text_Review = product_text_review[1:min_length],
+      Title_of_Review = product_title_of_review[1:min_length],
+      Verified_Purchase = verified_purchase[1:min_length],
       stringsAsFactors = FALSE
-    )
-    
-    # Append dataframe to the list
-    all_data[[i]] <- df
+    )[1:min(20, nrow(data.frame)), ])
   } else {
-    cat("No data found for URL:", urls[i], "\n")
+    NULL
   }
 }
 
-# Combine all dataframes into one
-final_df <- bind_rows(all_data)
 
-# View the data
-View(final_df)
-print(head(final_df))
+all_reviews <- list()
+
+
+for (url in urls) {
+  product_reviews <- scrape_reviews(url)
+  
+  if (!is.null(product_reviews)) {
+    all_reviews <- append(all_reviews, list(product_reviews))
+  } else {
+    cat("Failed to scrape URL:", url, "\n")
+  }
+}
+
+
+final_reviews_in_Refrigerator <- bind_rows(all_reviews)
+
+
+View(final_reviews_in_Refrigerator)
+print(head(final_reviews_in_Refrigerator))
 
 ```
+Televisions
+```{r}
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+
+urls <- c("https://www.amazon.com/tcl-fire-tv-55-inch-class-s5-4k-smart-tv/dp/B0D4PD799H", "https://www.amazon.com/amazon-fire-tv-32-inch-2-series-hd-smart-tv/dp/B0CJDSNN4T", "https://www.amazon.com/amazon-fire-tv-50-inch-4-series-4k-smart-tv/dp/B0CZBLZYY5", "https://www.amazon.com/amazon-fire-tv-50-inch-4-series-4k-smart-tv/dp/B0CZBLZYY5","https://www.amazon.com/tcl-fire-tv-55-inch-class-q65-qled-smart-tv/dp/B0D4NWLQN3", "https://www.amazon.com/tcl-fire-tv-55-inch-class-q65-qled-smart-tv/dp/B0D4NWLQN3", "https://www.amazon.com/tcl-fire-tv-55-inch-class-q65-qled-smart-tv/dp/B0D4NWLQN3", "https://www.amazon.com/amazon-fire-tv-50-inch-4-series-4k-smart-tv/dp/B0CZBLZYY5", "https://www.amazon.com/amazon-fire-tv-55-inch-4-series-4k-smart-tv/dp/B0CZBS9GKV","https://www.amazon.com/Hisense-65-Inch-Class-Google-65QD7N/dp/B0D5Y36ZKL"
+          )
+
+headers <- httr::add_headers(
+  `User-Agent` = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+)
+scrape_reviews <- function(url) {
+  
+  webpage <- httr::GET(url, headers) %>% read_html()
+
+  
+  product_name <- webpage %>%
+    html_nodes("#productTitle") %>%
+    html_text(trim = TRUE)
+  
+  product_reviewers <- webpage %>%
+    html_nodes("span.a-profile-name") %>%
+    html_text(trim = TRUE)
+  
+  
+  product_date <- webpage %>% 
+    html_nodes(".review-date") %>%
+    html_text(trim = TRUE)
+  
+  
+  product_individual_rating <- webpage %>%
+    html_nodes(".a-icon-alt") %>%
+    html_text(trim = TRUE)
+  
+  
+  product_text_review <- webpage %>%
+    html_nodes(".review-text-content span") %>%
+    html_text(trim = TRUE)
+  
+  
+  product_title_of_review <- webpage %>%
+    html_nodes(".review-title span") %>%
+    html_text(trim = TRUE)
+  
+  
+  verified_purchase <- webpage %>%
+    html_nodes(".review-data span.a-size-mini.a-color-state.a-text-bold") %>%
+    html_text(trim = TRUE)
+  
+  
+  verified_purchase <- ifelse(verified_purchase == "Verified Purchase", "Yes", "No")
+  
+  
+  min_length <- min(
+    length(product_reviewers),
+    length(product_date),
+    length(product_individual_rating),
+    length(product_text_review),
+    length(product_title_of_review),
+    length(verified_purchase)
+  )
+  
+  
+  if (min_length > 0) {
+    data.frame(
+      Product_Name = product_name[1:min_length],
+      Reviewers = product_reviewers[1:min_length],
+      Date = product_date[1:min_length],
+      Individual_Rating = product_individual_rating[1:min_length],
+      Text_Review = product_text_review[1:min_length],
+      Title_of_Review = product_title_of_review[1:min_length],
+      Verified_Purchase = verified_purchase[1:min_length],
+      stringsAsFactors = FALSE
+    )
+  } else {
+    NULL
+  }
+}
 
 
+all_reviews <- list()
+
+
+for (url in urls) {
+  product_reviews <- scrape_reviews(url)
+  
+  if (!is.null(product_reviews)) {
+    all_reviews <- append(all_reviews, list(product_reviews))
+  } else {
+    cat("Failed to scrape URL:", url, "\n")
+  }
+}
+
+
+final_reviews_in_TV <- bind_rows(all_reviews)
+
+
+View(final_reviews_in_TV)
+print(head(final_reviews_in_TV))
+
+```
+Freezers
+```{r}
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+
+urls <- c("https://www.amazon.com/Electactic-Adjustable-Thermostat-Removable-Reversible/dp/B0DG2J2MDT","https://www.amazon.com/Midea-MRC04M3AWW-White-Freezer-Cubic/dp/B00MVVITWC",
+          "https://www.amazon.com/Midea-MRC04M3AWW-White-Freezer-Cubic/dp/B00MVVITWC", 
+          "https://www.amazon.com/BANGSON-Upright-Convertible-Refrigerator-Apartment/dp/B0DBL42KGZ",
+          "https://www.amazon.com/West-Bend-WB0500CFMW-Temperature-Free-Standing/dp/B0C1PCTG9T", "https://www.amazon.com/West-Bend-WB0500CFMW-Temperature-Free-Standing/dp/B0C1PCTG9T","https://www.amazon.com/Midea-MRC04M3AWW-White-Freezer-Cubic/dp/B00MVVITWC", "https://www.amazon.com/Midea-MRC04M3AWW-White-Freezer-Cubic/dp/B00MVVITWC", "https://www.amazon.com/Midea-MRC04M3AWW-White-Freezer-Cubic/dp/B00MVVITWC", "https://www.amazon.com/midea-MRU030S2ARBB-Upright-Freezer-Large/dp/B07QKNP318")
+
+headers <- httr::add_headers(
+  `User-Agent` = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+)
+scrape_reviews <- function(url) {
+  
+  webpage <- httr::GET(url, headers) %>% read_html()
+
+  
+  product_name <- webpage %>%
+    html_nodes("#productTitle") %>%
+    html_text(trim = TRUE)
+  
+  product_reviewers <- webpage %>%
+    html_nodes("span.a-profile-name") %>%
+    html_text(trim = TRUE)
+  
+  
+  product_date <- webpage %>% 
+    html_nodes(".review-date") %>%
+    html_text(trim = TRUE)
+  
+  
+  product_individual_rating <- webpage %>%
+    html_nodes(".a-icon-alt") %>%
+    html_text(trim = TRUE)
+  
+  
+  product_text_review <- webpage %>%
+    html_nodes(".review-text-content span") %>%
+    html_text(trim = TRUE)
+  
+  
+  product_title_of_review <- webpage %>%
+    html_nodes(".review-title span") %>%
+    html_text(trim = TRUE)
+  
+  
+  verified_purchase <- webpage %>%
+    html_nodes(".review-data span.a-size-mini.a-color-state.a-text-bold") %>%
+    html_text(trim = TRUE)
+  
+  
+  verified_purchase <- ifelse(verified_purchase == "Verified Purchase", "Yes", "No")
+  
+  
+  min_length <- min(
+    length(product_reviewers),
+    length(product_date),
+    length(product_individual_rating),
+    length(product_text_review),
+    length(product_title_of_review),
+    length(verified_purchase)
+  )
+  
+  
+  if (min_length > 0) {
+    return(data.frame(
+      Product_Name = product_name[1:min_length],
+      Reviewers = product_reviewers[1:min_length],
+      Date = product_date[1:min_length],
+      Individual_Rating = product_individual_rating[1:min_length],
+      Text_Review = product_text_review[1:min_length],
+      Title_of_Review = product_title_of_review[1:min_length],
+      Verified_Purchase = verified_purchase[1:min_length],
+      stringsAsFactors = FALSE
+    )[1:min(20, nrow(data.frame)), ])
+  } else {
+    NULL
+  }
+}
+
+
+all_reviews <- list()
+
+
+for (url in urls) {
+  product_reviews <- scrape_reviews(url)
+  
+  if (!is.null(product_reviews)) {
+    all_reviews <- append(all_reviews, list(product_reviews))
+  } else {
+    cat("Failed to scrape URL:", url, "\n")
+  }
+}
+
+
+final_reviews_in_Freezers <- bind_rows(all_reviews)
+
+
+View(final_reviews_in_Freezers)
+print(head(final_reviews_in_Freezers))
+```
+Make-up
+```{r}
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+
+urls <- c(
+  "https://www.amazon.com/Peripera-Ink-Velvet-Lip-Tint/dp/B08XWHJLT6",
+  "https://www.amazon.com/ColorStay-Stocking-Stuffers-Medium-Full-Coverage/dp/B004X8M59E",
+  "https://www.amazon.com/Foundation-Coverage-Concealer-Flawless-Control/dp/B07W19Q5CK",
+  "https://www.amazon.com/Teenagers-Eyeshadow-Foundation-Concealer-Lipgloss/dp/B0CCS563S6",
+  "https://www.amazon.com/l-f-Reviver-Nourishing-High-shine-Cruelty-free/dp/B0CMJZ8G6Y",
+  "https://www.amazon.com/Liquid-Lipstick-Long-Lasting-Non-Stick-Waterproof/dp/B083QNQQP9","https://www.amazon.com/Paris-Makeup-True-Natural-Glow-Illuminator-Highlighter-Day-Radiant-Glow/dp/B074PTZCNX", "https://www.amazon.com/Your-Skin-BetterTM-Cream-Light/dp/B00RZ4R0ZM/ref=sr_1_24", "https://www.amazon.com/Your-Skin-BetterTM-Cream-Light/dp/B00RZ4R0ZM/ref=sr_1_24", "https://www.amazon.com/NYX-PROFESSIONAL-MAKEUP-Waterproof-Eyeliner/dp/B074Y8LM6T"
+)
+
+
+headers <- httr::add_headers(
+  `User-Agent` = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+)
+
+
+scrape_reviews <- function(url) {
+  
+  webpage <- httr::GET(url, headers) %>% read_html()
+
+  product_name <- webpage %>%
+    html_nodes("#productTitle") %>%
+    html_text(trim = TRUE)
+  
+  product_reviewers <- webpage %>%
+    html_nodes("span.a-profile-name") %>%
+    html_text(trim = TRUE)
+  
+  product_date <- webpage %>% 
+    html_nodes(".review-date") %>%
+    html_text(trim = TRUE)
+  
+  product_individual_rating <- webpage %>%
+    html_nodes(".a-icon-alt") %>%
+    html_text(trim = TRUE)
+  
+  product_text_review <- webpage %>%
+    html_nodes(".review-text-content span") %>%
+    html_text(trim = TRUE)
+  
+  product_title_of_review <- webpage %>%
+    html_nodes(".review-title span") %>%
+    html_text(trim = TRUE)
+  
+  verified_purchase <- webpage %>%
+    html_nodes(".review-data span.a-size-mini.a-color-state.a-text-bold") %>%
+    html_text(trim = TRUE)
+  
+  verified_purchase <- ifelse(verified_purchase == "Verified Purchase", "Yes", "No")
+  
+  min_length <- min(
+    length(product_reviewers),
+    length(product_date),
+    length(product_individual_rating),
+    length(product_text_review),
+    length(product_title_of_review),
+    length(verified_purchase)
+  )
+  
+  if (min_length > 0) {
+    return(data.frame(
+      Product_Name = product_name[1:min_length],
+      Reviewers = product_reviewers[1:min_length],
+      Date = product_date[1:min_length],
+      Individual_Rating = product_individual_rating[1:min_length],
+      Text_Review = product_text_review[1:min_length],
+      Title_of_Review = product_title_of_review[1:min_length],
+      Verified_Purchase = verified_purchase[1:min_length],
+      stringsAsFactors = FALSE
+    )[1:min(20, nrow(data.frame)), ])
+  } else {
+    NULL
+  }
+}
+
+
+all_reviews <- list()
+
+for (url in urls) {
+  product_reviews <- scrape_reviews(url)
+  
+  if (!is.null(product_reviews)) {
+    all_reviews <- append(all_reviews, list(product_reviews))
+  } else {
+    cat("Failed to scrape URL:", url, "\n")
+  }
+}
+
+
+final_reviews_in_MakeUp <- bind_rows(all_reviews)
+
+
+View(final_reviews_in_MakeUp)
+print(head(final_reviews_in_MakeUp))
+```
+Phones
+```{r}
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+
+urls <- c("https://www.amazon.com/Moto-Play-Unlocked-Camera-Sapphire/dp/B0CP6DDN1H", "https://www.amazon.com/SAMSUNG-A35-Unlocked-Smartphone-Expandable/dp/B0CV4NQYFP", "https://www.amazon.com/Galaxy-S21-Ultra-5G-Smartphone/dp/B096T6Y623", "https://www.amazon.com/Samsung-Galaxy-S20-FE-128GB/dp/B08L34JQ9C", "https://www.amazon.com/Samsung-Unlocked-Smartphone-Expandable-Infinite/dp/B09SM24S8C", "https://www.amazon.com/Apple-iPhone-128GB-Pacific-Blue/dp/B08PMYLKVF", "https://www.amazon.com/Apple-iPhone-14-128GB-Midnight/dp/B0BN72FYFG", "https://www.amazon.com/SAMSUNG-Smartphone-Unlocked-Android-Titanium/dp/B0CMDMKQB7", "https://www.amazon.com/Google-Pixel-8a-Unlocked-Advanced/dp/B0CYQ916ZY", "https://www.amazon.com/Google-Pixel-8a-Unlocked-Advanced/dp/B0CYQ916ZY")
+
+headers <- httr::add_headers(
+  `User-Agent` = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+)
+
+
+scrape_reviews <- function(url) {
+  
+  webpage <- httr::GET(url, headers) %>% read_html()
+
+  product_name <- webpage %>%
+    html_nodes("#productTitle") %>%
+    html_text(trim = TRUE)
+  
+  product_reviewers <- webpage %>%
+    html_nodes("span.a-profile-name") %>%
+    html_text(trim = TRUE)
+  
+  product_date <- webpage %>% 
+    html_nodes(".review-date") %>%
+    html_text(trim = TRUE)
+  
+  product_individual_rating <- webpage %>%
+    html_nodes(".a-icon-alt") %>%
+    html_text(trim = TRUE)
+  
+  product_text_review <- webpage %>%
+    html_nodes(".review-text-content span") %>%
+    html_text(trim = TRUE)
+  
+  product_title_of_review <- webpage %>%
+    html_nodes(".review-title span") %>%
+    html_text(trim = TRUE)
+  
+  verified_purchase <- webpage %>%
+    html_nodes(".review-data span.a-size-mini.a-color-state.a-text-bold") %>%
+    html_text(trim = TRUE)
+  
+  verified_purchase <- ifelse(verified_purchase == "Verified Purchase", "Yes", "No")
+  
+  min_length <- min(
+    length(product_reviewers),
+    length(product_date),
+    length(product_individual_rating),
+    length(product_text_review),
+    length(product_title_of_review),
+    length(verified_purchase)
+  )
+  
+  if (min_length > 0) {
+    return(data.frame(
+      Product_Name = product_name[1:min_length],
+      Reviewers = product_reviewers[1:min_length],
+      Date = product_date[1:min_length],
+      Individual_Rating = product_individual_rating[1:min_length],
+      Text_Review = product_text_review[1:min_length],
+      Title_of_Review = product_title_of_review[1:min_length],
+      Verified_Purchase = verified_purchase[1:min_length],
+      stringsAsFactors = FALSE
+    )[1:min(20, nrow(data.frame)), ])
+  } else {
+    NULL
+  }
+}
+
+
+all_reviews <- list()
+
+for (url in urls) {
+  product_reviews <- scrape_reviews(url)
+  
+  if (!is.null(product_reviews)) {
+    all_reviews <- append(all_reviews, list(product_reviews))
+  } else {
+    cat("Failed to scrape URL:", url, "\n")
+  }
+}
+
+
+final_reviews_in_CP <- bind_rows(all_reviews)
+
+
+View(final_reviews_in_CP)
+print(head(final_reviews_in_CP))
+
+
+
+```
 
 
