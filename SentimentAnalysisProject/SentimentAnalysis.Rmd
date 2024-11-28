@@ -1,0 +1,18 @@
+---
+title: "Sentiment Analysis"
+author: "Barrientos, Delfin, Infiesto"
+date: "2024-11-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+tweetsDF <- read_excel("C:/PROJ/tweetsDF.xlsx")
+View(tweetsDF)
+
+```
+
