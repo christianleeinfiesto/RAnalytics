@@ -140,7 +140,7 @@ for (div_element in div_elements) {
   ratings <- c(ratings, rating)
   reviews <- c(reviews, reviews_count)
 }
-#This category includes a wide range of clothing such as dresses, tops, jeans, and activewear. Prices range from inexpensive everyday wear to higher-end fashion items. Ratings can vary based on factors like fit and fabric quality, which are important to customers. These products often have many reviews, where customers talk about the style, comfort, and how the clothes fit, helping others make decisions when buying fashion items.
+#This category includes a wide range of clothing such as dresses, tops, jeans, and active wear. Prices range from inexpensive everyday wear to higher-end fashion items. Ratings can vary based on factors like fit and fabric quality, which are important to customers. These products often have many reviews, where customers talk about the style, comfort, and how the clothes fit, helping others make decisions when buying fashion items.
 ```
 
 ```{r}
