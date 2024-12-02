@@ -1,0 +1,44 @@
+---
+title: "Sentiment Analysis"
+author: "Barrientos, Delfin, Infiesto"
+date: "2024-11-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(stringr)
+library(syuzhet)
+
+tweetsDF <- read_excel("C:/PROJ/tweetsDF.xlsx")
+
+
+View(tweetsDF)
+
+tweetsDF <- tweetsDF %>% 
+  rename(
+    screen_name = screenName,
+    tweet = text,
+    created_at = created,
+    source = statusSource,
+    rounded_time = Created_At_Round,
+    tweet_source = tweetSource
+  )
+
+  tweetsDF <- tweetsDF %>%
+    filter(!is.na(tweet), !is.na(created_at))
+  
+  tweetsDF$created_at <- as.POSIXct(tweetsDF$created_at, format = "%Y-%m-%d %H:%M:%S")
+
+  str(tweetsDF)
+
+```
+
+
