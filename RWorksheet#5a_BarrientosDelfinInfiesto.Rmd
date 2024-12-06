@@ -152,6 +152,29 @@ product_df <- data.frame(
 print(product_df)
 ```
 
+8. Create graphs regarding the use case.
+```{r}
+num_products <- nrow(product_df)  # Total number of rows (products)
+
+category_vector <- c(rep("Electronics", num_products * 1/5),
+                     rep("Computers", num_products * 1/5),
+                     rep("Beauty", num_products * 1/5),
+                     rep("Arts & Crafts", num_products * 1/5),
+                     rep("Fashion", num_products * 1/5))
+
+category_vector <- category_vector[1:num_products]
+
+product_df$Category <- category_vector
+
+product_df$Price <- as.numeric(gsub(",", "", product_df$Price))
+
+ggplot(product_df, aes(x = Price, fill = Category)) +
+  geom_histogram(binwidth = 50, alpha = 0.7, position = "dodge") +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Price Distribution by Category", x = "Price ($)", y = "Frequency") +
+  theme_minimal()
+
+```
 
 
 
