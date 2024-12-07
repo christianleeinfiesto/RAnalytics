@@ -1,0 +1,237 @@
+---
+title: "RWorksheet#a"
+author: "Barrientos, Delfin, Infiesto"
+date: "2024-11-06"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+```{r}
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+library(stringr)
+```
+
+
+```{r}
+descriptions <- character()
+prices <- character()
+ratings <- character()
+reviews <- character()
+```
+
+Electronics
+Accessories & Supplies
+```{r}
+url_1 <- "https://www.amazon.com/s?i=specialty-aps&bbn=16225009011&rh=n%3A%2116225009011%2Cn%3A281407&ref=nav_em__nav_desktop_sa_intl_accessories_and_supplies_0_2_5_2"
+
+session <- bow(url_1, user_agent = "Educational")
+session_page <- scrape(session)
+
+div_elements <- html_nodes(session_page, 'div.sg-col-4-of-24.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.s-widget-spacing-small.sg-col-4-of-20')
+div_elements <- div_elements[1:min(30, length(div_elements))]
+for (div_element in div_elements) {
+  description <- html_text(html_node(div_element, 'span.a-text-normal'), trim = TRUE)
+  price <- html_text(html_node(div_element, 'span.a-price-whole'), trim = TRUE)
+  rating <- html_text(html_node(div_element, 'span.a-icon-alt'), trim = TRUE)
+  reviews_count <- html_text(html_node(div_element, 'span.a-size-base'), trim = TRUE)
+
+  descriptions <- c(descriptions, description)
+  prices <- c(prices, price)
+  ratings <- c(ratings, rating)
+  reviews <- c(reviews, reviews_count)
+}
+#This category features products like wireless headphones, charging cables, portable chargers, and other electronic accessories. The prices range from low-cost items to high-end products. Many of these products get high ratings, showing that customers are happy with their quality. The number of reviews is usually large, meaning these products are popular and often purchased by many users.
+```
+
+Computers
+Computer Accessories and Peripherals
+```{r}
+url_2 <- "https://www.amazon.com/s?i=specialty-aps&bbn=16225007011&rh=n%3A16225007011%2Cn%3A172456&ref=nav_em__nav_desktop_sa_intl_computer_accessories_and_peripherals_0_2_6_2"
+
+session <- bow(url_2, user_agent = "Educational")
+session_page <- scrape(session)
+
+div_elements <- html_nodes(session_page, 'div.sg-col-4-of-24.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.s-widget-spacing-small.sg-col-4-of-20')
+
+for (div_element in div_elements) {
+  description <- html_text(html_node(div_element, 'span.a-text-normal'), trim = TRUE)
+  price <- html_text(html_node(div_element, 'span.a-price-whole'), trim = TRUE)
+  rating <- html_text(html_node(div_element, 'span.a-icon-alt'), trim = TRUE)
+  reviews_count <- html_text(html_node(div_element, 'span.a-size-base'), trim = TRUE)
+
+  descriptions <- c(descriptions, description)
+  prices <- c(prices, price)
+  ratings <- c(ratings, rating)
+  reviews <- c(reviews, reviews_count)
+}
+#Products in this category include things like keyboards, mice, external hard drives, and webcams. The price range is wide, offering both budget-friendly options and more expensive ones for professional users or gamers. These items generally have high ratings, as people look for reliable and functional accessories. The reviews are numerous, which shows a high level of interest and demand for computer-related products.
+
+```
+Beauty and Personal Care
+Makeup
+```{r}
+url_3 <- "https://www.amazon.com/s?i=specialty-aps&bbn=16225006011&rh=n%3A%2116225006011%2Cn%3A11058281&ref=nav_em__nav_desktop_sa_intl_makeup_0_2_11_2"
+
+session <- bow(url_3, user_agent = "Educational")
+session_page <- scrape(session)
+
+div_elements <- html_nodes(session_page, 'div.sg-col-4-of-24.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.s-widget-spacing-small.sg-col-4-of-20')
+
+for (div_element in div_elements) {
+  description <- html_text(html_node(div_element, 'span.a-text-normal'), trim = TRUE)
+  price <- html_text(html_node(div_element, 'span.a-price-whole'), trim = TRUE)
+  rating <- html_text(html_node(div_element, 'span.a-icon-alt'), trim = TRUE)
+  reviews_count <- html_text(html_node(div_element, 'span.a-size-base'), trim = TRUE)
+
+  descriptions <- c(descriptions, description)
+  prices <- c(prices, price)
+  ratings <- c(ratings, rating)
+  reviews <- c(reviews, reviews_count)
+}
+#This category includes makeup products such as lipsticks, foundations, mascaras, and other beauty items. The prices range from affordable drugstore brands to more expensive luxury cosmetics. The ratings are often detailed and reflect the experiences of users, focusing on things like color, texture, and longevity. Many of these products have a large number of reviews, showing that people share their experiences and preferences for different makeup brands and types.
+```
+Arts & Crafts
+Painting Drawing and Art Supplies
+```{r}
+url_4 <- "https://www.amazon.com/s?i=specialty-aps&bbn=4954955011&rh=n%3A4954955011%2Cn%3A%212617942011%2Cn%3A2747968011&ref=nav_em__nav_desktop_sa_intl_painting_drawing_supplies_0_2_8_2"
+
+session <- bow(url_4, user_agent = "Educational")
+session_page <- scrape(session)
+
+div_elements <- html_nodes(session_page, 'div.sg-col-4-of-24.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.s-widget-spacing-small.sg-col-4-of-20')
+
+for (div_element in div_elements) {
+  description <- html_text(html_node(div_element, 'span.a-text-normal'), trim = TRUE)
+  price <- html_text(html_node(div_element, 'span.a-price-whole'), trim = TRUE)
+  rating <- html_text(html_node(div_element, 'span.a-icon-alt'), trim = TRUE)
+  reviews_count <- html_text(html_node(div_element, 'span.a-size-base'), trim = TRUE)
+
+  descriptions <- c(descriptions, description)
+  prices <- c(prices, price)
+  ratings <- c(ratings, rating)
+  reviews <- c(reviews, reviews_count)
+}
+#In this category, you’ll find products like paints, sketchbooks, brushes, and markers. Prices are generally affordable, but there are also higher-priced, professional-quality supplies. These products often get high ratings because artists value good-quality materials. Reviews are detailed, with people sharing their thoughts on how well the products work for different artistic projects, which makes this category popular with both beginners and professionals.
+
+```
+Womens's Fashion
+Clothing
+```{r}
+url_5 <- "https://www.amazon.com/s?i=specialty-aps&bbn=16225018011&rh=n%3A7141123011%2Cn%3A16225018011%2Cn%3A1040660&ref=nav_em__nav_desktop_sa_intl_clothing_0_2_12_2"
+
+session <- bow(url_5, user_agent = "Educational")
+session_page <- scrape(session)
+
+div_elements <- html_nodes(session_page, 'div.sg-col-4-of-24.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.s-widget-spacing-small.sg-col-4-of-20')
+
+for (div_element in div_elements) {
+  description <- html_text(html_node(div_element, 'span.a-text-normal'), trim = TRUE)
+  price <- html_text(html_node(div_element, 'span.a-price-whole'), trim = TRUE)
+  rating <- html_text(html_node(div_element, 'span.a-icon-alt'), trim = TRUE)
+  reviews_count <- html_text(html_node(div_element, 'span.a-size-base'), trim = TRUE)
+
+  descriptions <- c(descriptions, description)
+  prices <- c(prices, price)
+  ratings <- c(ratings, rating)
+  reviews <- c(reviews, reviews_count)
+}
+#This category includes a wide range of clothing such as dresses, tops, jeans, and active wear. Prices range from inexpensive everyday wear to higher-end fashion items. Ratings can vary based on factors like fit and fabric quality, which are important to customers. These products often have many reviews, where customers talk about the style, comfort, and how the clothes fit, helping others make decisions when buying fashion items.
+```
+
+```{r}
+product_df <- data.frame(
+  Description = descriptions,
+  Price = prices,
+  Rating = ratings,
+  Reviews = reviews)
+print(product_df)
+```
+
+8. Create graphs regarding the use case.
+```{r}
+library(ggplot2)
+num_products <- nrow(product_df)  # Total number of rows (products)
+
+category_vector <- c(rep("Electronics", num_products * 1/5),
+                     rep("Computers", num_products * 1/5),
+                     rep("Beauty", num_products * 1/5),
+                     rep("Arts & Crafts", num_products * 1/5),
+                     rep("Fashion", num_products * 1/5))
+
+category_vector <- category_vector[1:num_products]
+
+product_df$Category <- category_vector
+
+product_df$Price <- as.numeric(gsub(",", "", product_df$Price))
+
+ggplot(product_df, aes(x = Price, fill = Category)) +
+  geom_histogram(binwidth = 50, alpha = 0.7, position = "dodge") +
+  scale_x_continuous(labels = scales::comma) +
+  labs(title = "Price Distribution by Category", x = "Price ($)", y = "Frequency") +
+  theme_minimal()
+
+```
+```{r}
+product_df$Rating <- as.numeric(gsub(" out of 5 stars", "", product_df$Rating))
+
+ggplot(product_df, aes(x = Rating)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Product Ratings Distribution", x = "Rating", y = "Count") +
+  theme_minimal()
+
+```
+```{r}
+product_df$Reviews <- as.numeric(gsub(",", "", product_df$Reviews))
+
+ggplot(product_df, aes(x = Reviews, y = Rating)) +
+  geom_point(color = "purple", alpha = 0.6) +
+  labs(title = "Review Count vs Rating", x = "Number of Reviews", y = "Rating") +
+  theme_minimal()
+
+```
+
+9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
+```{r}
+library(ggplot2)
+
+ggplot(product_df, aes(x = Price, y = Rating, color = Category)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Price vs Rating for Products by Category", 
+       x = "Price ($)", y = "Rating") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+```
+10. Rank the products of each category by price and ratings. Explain briefly.
+```{r}
+library(dplyr)
+
+product_df_ranked_by_price <- product_df %>%
+  group_by(Category) %>%
+  arrange(Price, .by_group = TRUE) %>%
+  mutate(Price_Rank = row_number())
+
+head(product_df_ranked_by_price)
+
+product_df_ranked_by_rating <- product_df %>%
+  group_by(Category) %>%
+  arrange(desc(Rating), .by_group = TRUE) %>%
+  mutate(Rating_Rank = row_number())
+
+head(product_df_ranked_by_rating)
+```
+
+
+
+
+
+
+
+
+
+
