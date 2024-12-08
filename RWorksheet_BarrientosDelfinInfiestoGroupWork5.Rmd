@@ -134,7 +134,5 @@ print(max_shows_year)
 
 
 
-
-
 ```
 
