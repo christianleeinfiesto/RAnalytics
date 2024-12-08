@@ -38,7 +38,24 @@ tweetsDF <- tweetsDF %>%
   tweetsDF$created_at <- as.POSIXct(tweetsDF$created_at, format = "%Y-%m-%d %H:%M:%S")
 
   str(tweetsDF)
+  
+  
+tweets_trend <- tweetsDF %>%
+  mutate(date = as.Date(created_at)) %>%
+  group_by(date) %>%
+  summarise(tweet_count = n())
+
+# Plot the trend
+ggplot(tweets_trend, aes(x = date, y = tweet_count)) +
+  geom_line(color = "red", linewidth = 1) +
+  labs(
+    title = "Trend of Tweets Over Time",
+    x = "Date",
+    y = "Number of Tweets"
+  ) +
+  theme_minimal()
 
 ```
+The graph titled "Trend of Tweets Over Time" shows how many tweets were posted each day over a certain time period. The dates are on the x-axis, and the number of tweets is on the y-axis. The red line connects the daily tweet counts, making it easy to see when there were more tweets or fewer tweets. Some days have a lot more tweets, which could mean something important happened, while other days have fewer tweets. This graph helps us see patterns in how people were posting tweets over time.
 
 
