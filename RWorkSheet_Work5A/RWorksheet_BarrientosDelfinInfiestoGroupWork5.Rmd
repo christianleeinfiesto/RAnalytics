@@ -7,7 +7,6 @@ output: pdf_document
 #Extracting TV Shows Reviews
 
 #1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
-#It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv show.
 
 ```{r}
 library(polite)
@@ -25,7 +24,6 @@ title_elements <- read_html(url) %>%
   html_nodes('.ipc-title__text') %>%
   html_text()
 
-# Selecting the appropriate range for titles
 titles_df <- as.data.frame(title_elements[3:27], stringsAsFactors = FALSE)
 colnames(titles_df) <- "Ranked_Titles"
 
@@ -133,7 +131,7 @@ View(final_shows_df)
 ```
 
 ```{r}
-#2 
+#2. 
 library(rvest)
 library(dplyr)
 
@@ -155,51 +153,7 @@ five_df <- data.frame(
   ),
   URLs = url_5shows
 ) 
-scrape_reviews <- function(show_url) {
-  page <- read_html(show_url)
-  
-  usernames <- page %>%
-    html_nodes('[data-testid="author-link"]') %>%
-    html_text()
-  
-  review_dates <- page %>%
-    html_nodes('li.review-date') %>%
-    html_text()
-  
-  user_rating <- page %>%
-    html_nodes('span.ipc-rating-star--rating') %>%
-    html_text()
-  
-  rev_title <- page %>%
-    html_nodes('h3.ipc-title__text') %>%
-    html_text()
-  
-  text_rev <- page %>%
-    html_nodes('div.ipc-html-content-inner-div') %>%
-    html_text()
-  
-  # Ensure each data frame has the same number of rows by taking the minimum length
-  min_reviews <- min(length(usernames), length(review_dates), length(user_rating),
-                     length(rev_title), length(text_rev))
-  
-  data.frame(
-    Usernames = head(usernames, min_reviews), 
-    Dates = head(review_dates, min_reviews),
-    User_Rating = head(user_rating, min_reviews), 
-    Review_Title = head(rev_title, min_reviews),
-    Text_Reviews = head(text_rev, min_reviews)
-  )
-}
 
-reviews_data <- lapply(five_df$URLs, scrape_reviews)
-names(reviews_data) <- five_df$Title
-
-
-reviews_data[["Breaking Bad"]]
-reviews_data[["Hunter x Hunter"]]
-reviews_data[["Rick and Morty"]]
-reviews_data[["Attack on Titan"]]
-reviews_data[["Arcane"]]
 
 ```
 ```{r}
