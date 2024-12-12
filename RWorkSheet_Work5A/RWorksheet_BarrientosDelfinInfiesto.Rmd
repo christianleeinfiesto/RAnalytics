@@ -128,6 +128,7 @@ final_shows_df <- cbind(top_tv_shows, show_details_df)
 print(final_shows_df)
 View(final_shows_df)
 
+
 ```
 
 ```{r}
@@ -191,9 +192,9 @@ scrape_reviews <- function(show_url) {
 }
 
 reviews_data <- lapply(five_df$URLs, scrape_reviews)
-names(reviews_data) <- five_df$Title
+names(reviews_data) <- five_df$TitleS
 
-# Access each data frame
+
 reviews_data[["Breaking Bad"]]
 reviews_data[["Hunter x Hunter"]]
 reviews_data[["Rick and Morty"]]
@@ -204,7 +205,94 @@ reviews_data[["Arcane"]]
 ```
 ```{r}
 #3. 
-
 library(ggplot2)
+library(polite)
+library(httr)
+library(rvest)
+library(dplyr)
+
+url <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
+session <- bow(url, user_agent = "Educational")
+session
+
+title_elements <- read_html(url) %>%
+  html_nodes('.ipc-title__text') %>%
+  html_text()
+
+titles_df <- as.data.frame(title_elements[3:52], stringsAsFactors = FALSE)
+colnames(titles_df) <- "Ranked_Titles"
+
+split_titles <- strsplit(as.character(titles_df$Ranked_Titles), "\\.", fixed = FALSE)
+titles_split_df <- data.frame(do.call(rbind, split_titles), stringsAsFactors = FALSE)
+
+colnames(titles_split_df) <- c("Rank", "Title")
+titles_split_df$Title <- trimws(titles_split_df$Title)
+
+rank_title <- titles_split_df
+rank_title
+
+voter_elements <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--voteCount') %>%
+  html_text()
+voters_cleaned <- gsub('[()]', '', voter_elements)
+
+episode_elements <- read_html(url) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_text()
+episodes_cleaned <- gsub('[eps]', '', episode_elements)
+episodes_count <- as.numeric(episodes_cleaned)
+
+years <- read_html(url) %>%
+    html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_text()
+
+cat("Rank and Title:", nrow(rank_title), "\n")
+cat("Ratings:", length(rating_elements), "\n")
+cat("Voters:", length(voters_cleaned), "\n")
+cat("Episodes:", length(episodes_count), "\n")
+cat("Years:", length(years), "\n")
+
+min_length <- min(nrow(rank_title), length(rating_elements), length(voters_cleaned), length(episodes_count), length(years))
+
+rank_title <- rank_title[1:min_length, ]
+rating_elements <- rating_elements[1:min_length]
+voters_cleaned <- voters_cleaned[1:min_length]
+episodes_count <- episodes_count[1:min_length]
+years <- years[1:min_length]
+
+top_tv_shows <- data.frame(
+  Rank = rank_title[,1],
+  Title = rank_title[,2],
+  Rating = rating_elements,
+  Voters = voters_cleaned,
+  Episodes = episodes_count,
+  Year = years
+)
+
+
+top_tv_shows <- top_tv_shows %>% filter(!is.na(Year) & Year != "")
+
+
+shows_by_year <- top_tv_shows %>% 
+  group_by(Year) %>% 
+  summarize(Count = n())
+
+
+ggplot(shows_by_year, aes(x = Year, y = Count)) +
+  geom_line(color = "blue", size = 1) +
+  geom_point(color = "red", size = 2) +
+  labs(title = "Number of TV Shows Released by Year", 
+       x = "Year", 
+       y = "Number of TV Shows") +
+  theme_minimal()
+
+
+most_shows_year <- shows_by_year[which.max(shows_by_year$Count), ]
+cat("The year with the most number of TV shows released is:", most_shows_year$Year, "with", most_shows_year$Count, "shows.\n")
 
 ```
+
+```{r}
+#4. 
+```
+
