@@ -234,6 +234,7 @@ library(polite)
 library(stringr)
 
 
+
 categories <- list(
   Electronics = "https://www.amazon.com/s?bbn=16225007011&rh=n%3A16225007011%2Cn%3A172282&dc&qid=1733999643&rnid=2941120011&ref=sr_nr_n_1",
   Books = "https://www.amazon.com/b?node=283155&ccs_id=c20df0d4-c9df-4e6d-8c00-34888c8fa5b1",
@@ -276,8 +277,8 @@ amazon_products <- function(url) {
     html_nodes("span.a-icon-alt") %>%
     html_text() %>%
     gsub(" out of 5 stars", "", .) %>%
+    gsub(" Stars & Up", "", .) %>%
     as.numeric()
-  
   
   data.frame(
     Description = name[1:30],
@@ -286,6 +287,7 @@ amazon_products <- function(url) {
   )
 }
 
+# Replace `urls` with the list of Amazon product URLs you provided
 categories <- list(
   Electronics = "https://www.amazon.com/s?bbn=16225007011&rh=n%3A16225007011%2Cn%3A172282&dc&qid=1733999643&rnid=2941120011&ref=sr_nr_n_1",
   Books = "https://www.amazon.com/b?node=283155&ccs_id=c20df0d4-c9df-4d6d-8c00-34888c8fa5b1",
@@ -302,8 +304,11 @@ category_df <- data.frame(
 )
 
 print(category_df)
+
+
 products <- lapply(category_df$URL, amazon_products)
 names(products) <- category_df$Category
+
 
 
 reviews_scrape <- function(url) {
@@ -316,11 +321,58 @@ reviews_scrape <- function(url) {
     paste0("https://www.amazon.com", .)
   
   data.frame(
-    review_links = review_links[1:30]
+    review_links = review_links
   )
 }
 
 review_links_df <- lapply(category_df$URL, reviews_scrape)
+
+
+reviews_text <- function(urls) {
+  
+  results <- data.frame(
+    Reviews = character(length(urls)),  
+    stringsAsFactors = FALSE
+  )
+  
+  for (i in seq_along(urls)) {
+    if (!is.na(urls[i])) {
+      page <- read_html(urls[i])
+      reviews_data <- page %>%
+        html_nodes("p.a-spacing-small") %>%
+        .[1] %>%
+        html_text()
+
+      results$Reviews[i] <- if (length(reviews_data) > 0) reviews_data else NA
+    }
+  }
+  
+  return(results)
+}
+
+
+
+electronucs_reviews <- reviews_text(review_links_df[[1]]$review_links)
+books_reviews <- reviews_text(review_links_df[[2]]$review_links)
+toys_reviews <- reviews_text(review_links_df[[3]]$review_links)
+baby_reviews <- reviews_text(review_links_df[[4]]$review_links)
+luggage_reviews <- reviews_text(review_links_df[[5]]$review_links)
+
+
+electronics_category <- cbind(products[["Electronics"]], electronics_reviews)
+books_category <- cbind(products[["Books"]], laptop_reviews)
+toys_category <- cbind(products[["Toys"]], accessories_reviews)
+baby_category <- cbind(products[["Baby"]], sports_reviews)
+luggage_category <- cbind(products[["Luggage"]], luggage_reviews)
+
+electronics_category
+books_category
+toys_category
+baby_category
+luggage_category
+
+
+
 
 ```
 
