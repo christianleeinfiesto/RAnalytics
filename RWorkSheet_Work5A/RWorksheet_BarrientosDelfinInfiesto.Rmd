@@ -1,0 +1,310 @@
+---
+title: "RWorksheet#5"
+author: "Barrientos, Delfin, Infiesto"
+date: "2024-11-06"
+output: pdf_document
+---
+#Extracting TV Shows Reviews
+
+#1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
+
+```{r}
+library(polite)
+library(httr)
+library(rvest)
+library(dplyr)
+library(ggplot2)
+
+url <- "https://www.imdb.com/chart/toptv/?sort=rank%2Casc"
+session <- bow(url, user_agent = "Educational")
+session
+
+
+title_elements <- read_html(url) %>%
+  html_nodes('.ipc-title__text') %>%
+  html_text()
+
+titles_df <- as.data.frame(title_elements[3:27], stringsAsFactors = FALSE)
+colnames(titles_df) <- "Ranked_Titles"
+
+
+split_titles <- strsplit(as.character(titles_df$Ranked_Titles), "\\.", fixed = FALSE)
+titles_split_df <- data.frame(do.call(rbind, split_titles), stringsAsFactors = FALSE)
+
+
+colnames(titles_split_df) <- c("Rank", "Title")
+titles_split_df$Title <- trimws(titles_split_df$Title)
+
+rank_title <- titles_split_df
+rank_title
+
+
+rating_elements <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--rating') %>%
+  html_text()
+
+voter_elements <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--voteCount') %>%
+  html_text()
+voters_cleaned <- gsub('[()]', '', voter_elements)
+
+
+episode_elements <- read_html(url) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_text()
+episodes_cleaned <- gsub('[eps]', '', episode_elements)
+episodes_count <- as.numeric(episodes_cleaned)
+
+episode_elements <- read_html(url) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_text()
+episodes_cleaned <- gsub('[eps]', '', episode_elements)
+episodes_count <- as.numeric(episodes_cleaned)
+
+years <- read_html(url) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_text()
+
+min_length <- min(nrow(rank_title), length(rating_elements), length(voters_cleaned), length(episodes_count), length(years))
+
+
+rank_title <- rank_title[1:min_length, ]
+rating_elements <- rating_elements[1:min_length]
+voters_cleaned <- voters_cleaned[1:min_length]
+episodes_count <- episodes_count[1:min_length]
+years <- years[1:min_length]
+
+top_tv_shows <- data.frame(
+  Rank = rank_title$Rank,
+  Title = rank_title$Title,
+  Rating = rating_elements,
+  Voters = voters_cleaned,
+  Episodes = episodes_count,
+  Year = years
+)
+
+
+home_link <- 'https://www.imdb.com/chart/toptv/'
+main_page_html <- read_html(home_link)
+
+show_links <- main_page_html %>%
+  html_nodes("a.ipc-title-link-wrapper") %>%
+  html_attr("href")
+
+show_details_list <- lapply(show_links, function(link) {
+  complete_link <- paste0("https://imdb.com", link)
+  
+  show_page <- read_html(complete_link)
+  review_link <- show_page %>% 
+    html_nodes('a.isReview') %>% 
+    html_attr("href")
+  
+  critic_reviews <- show_page %>%
+    html_nodes("span.score") %>%
+    html_text()
+  critic_df <- data.frame(Critic_Reviews = critic_reviews[2], stringsAsFactors = FALSE)
+  
+  popularity_score <- show_page %>%
+    html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
+    html_text()
+  
+  user_reviews_page <- read_html(paste0("https://imdb.com", review_link[1]))
+  user_reviews_count <- user_reviews_page %>%
+    html_nodes('[data-testid="tturv-total-reviews"]') %>%
+    html_text()
+  
+  return(data.frame(
+    Show_Link = complete_link,
+    User_Reviews = user_reviews_count,
+    Critic_Reviews = critic_df,
+    Popularity_Rating = popularity_score
+  )) 
+})
+
+show_details_df <- do.call(rbind, show_details_list)
+
+final_shows_df <- cbind(top_tv_shows, show_details_df)
+
+print(final_shows_df)
+View(final_shows_df)
+
+
+```
+
+```{r}
+#2. 
+library(rvest)
+library(dplyr)
+
+url_5shows <- c(
+  "https://www.imdb.com/title/tt0903747/reviews/?ref_=ttexr_ql_2",
+  "https://www.imdb.com/title/tt2098220/?ref_=chttvtp_t_33",
+  "https://www.imdb.com/title/tt2861424/?ref_=chttvtp_t_17",
+  "https://www.imdb.com/title/tt2560140/?ref_=chttvtp_t_23",
+  "https://www.imdb.com/title/tt11126994/?ref_=chttvtp_t_25"
+)
+
+five_df <- data.frame(
+  Title = c(
+    "Breaking Bad",
+    "Hunter x Hunter",
+    "Rick and Morty",
+    "Attack on Titan", 
+    "Arcane"
+  ),
+  URLs = url_5shows
+) 
+
+scrape_reviews <- function(show_url) {
+  page <- read_html(show_url)
+  
+  usernames <- page %>%
+    html_nodes('[data-testid="author-link"]') %>%
+    html_text()
+  
+  review_dates <- page %>%
+    html_nodes('li.review-date') %>%
+    html_text()
+  
+  user_rating <- page %>%
+    html_nodes('span.ipc-rating-star--rating') %>%
+    html_text()
+  
+  rev_title <- page %>%
+    html_nodes('h3.ipc-title__text') %>%
+    html_text()
+  
+  text_rev <- page %>%
+    html_nodes('div.ipc-html-content-inner-div') %>%
+    html_text()
+  
+  
+  min_reviews <- min(length(usernames), length(review_dates), length(user_rating),
+                     length(rev_title), length(text_rev))
+  
+  data.frame(
+    Usernames = head(usernames, min_reviews), 
+    Dates = head(review_dates, min_reviews),
+    User_Rating = head(user_rating, min_reviews), 
+    Review_Title = head(rev_title, min_reviews),
+    Text_Reviews = head(text_rev, min_reviews)
+  )
+}
+
+reviews_data <- lapply(five_df$URLs, scrape_reviews)
+names(reviews_data) <- five_df$TitleS
+
+
+reviews_data[["Breaking Bad"]]
+reviews_data[["Hunter x Hunter"]]
+reviews_data[["Rick and Morty"]]
+reviews_data[["Attack on Titan"]]
+reviews_data[["Arcane"]]
+
+
+```
+```{r}
+#3. 
+library(ggplot2)
+library(polite)
+library(httr)
+library(rvest)
+library(dplyr)
+
+url <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
+session <- bow(url, user_agent = "Educational")
+session
+
+title_elements <- read_html(url) %>%
+  html_nodes('.ipc-title__text') %>%
+  html_text()
+
+titles_df <- as.data.frame(title_elements[3:52], stringsAsFactors = FALSE)
+colnames(titles_df) <- "Ranked_Titles"
+
+split_titles <- strsplit(as.character(titles_df$Ranked_Titles), "\\.", fixed = FALSE)
+titles_split_df <- data.frame(do.call(rbind, split_titles), stringsAsFactors = FALSE)
+
+colnames(titles_split_df) <- c("Rank", "Title")
+titles_split_df$Title <- trimws(titles_split_df$Title)
+
+rank_title <- titles_split_df
+rank_title
+
+voter_elements <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--voteCount') %>%
+  html_text()
+voters_cleaned <- gsub('[()]', '', voter_elements)
+
+episode_elements <- read_html(url) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_text()
+episodes_cleaned <- gsub('[eps]', '', episode_elements)
+episodes_count <- as.numeric(episodes_cleaned)
+
+years <- read_html(url) %>%
+    html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_text()
+
+cat("Rank and Title:", nrow(rank_title), "\n")
+cat("Ratings:", length(rating_elements), "\n")
+cat("Voters:", length(voters_cleaned), "\n")
+cat("Episodes:", length(episodes_count), "\n")
+cat("Years:", length(years), "\n")
+
+min_length <- min(nrow(rank_title), length(rating_elements), length(voters_cleaned), length(episodes_count), length(years))
+
+rank_title <- rank_title[1:min_length, ]
+rating_elements <- rating_elements[1:min_length]
+voters_cleaned <- voters_cleaned[1:min_length]
+episodes_count <- episodes_count[1:min_length]
+years <- years[1:min_length]
+
+top_tv_shows <- data.frame(
+  Rank = rank_title[,1],
+  Title = rank_title[,2],
+  Rating = rating_elements,
+  Voters = voters_cleaned,
+  Episodes = episodes_count,
+  Year = years
+)
+
+
+top_tv_shows <- top_tv_shows %>% filter(!is.na(Year) & Year != "")
+
+
+shows_by_year <- top_tv_shows %>% 
+  group_by(Year) %>% 
+  summarize(Count = n())
+
+
+ggplot(shows_by_year, aes(x = Year, y = Count)) +
+  geom_line(color = "blue", size = 2) +
+  geom_point(color = "red", size = 2) +
+  labs(title = "Number of TV Shows Released by Year", 
+       x = "Year", 
+       y = "Number of TV Shows") +
+  theme_minimal()
+
+
+most_shows_year <- shows_by_year[which.max(shows_by_year$Count), ]
+cat("The year with the most number of TV shows released is:", most_shows_year$Year, "with", most_shows_year$Count, "shows.\n")
+
+```
+
+```{r}
+#4. 
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+library(stringr)
+
+url <- "https://www.amazon.com/"
+session <- bow(url, 
+               user_agent = "Educational")
+session
+
+
+```
+
