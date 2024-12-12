@@ -286,5 +286,23 @@ amazon_products <- function(url) {
   )
 }
 
+categories <- list(
+  Electronics = "https://www.amazon.com/s?bbn=16225007011&rh=n%3A16225007011%2Cn%3A172282&dc&qid=1733999643&rnid=2941120011&ref=sr_nr_n_1",
+  Books = "https://www.amazon.com/b?node=283155&ccs_id=c20df0d4-c9df-4d6d-8c00-34888c8fa5b1",
+  Toys_and_Games = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dtoys-and-games-intl-ship&field-keywords=&crid=17DE3O4GROMUT&sprefix=%2Ctoys-and-games-intl-ship%2C382",
+  Baby = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dbaby-products-intl-ship&field-keywords=&crid=3E4FRJD7G2VJW&sprefix=%2Cbaby-products-intl-ship%2C347",
+  Luggage = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dluggage-intl-ship&field-keywords=&crid=6RHDAYK51SOH&sprefix=%2Cluggage-intl-ship%2C311"
+)
+
+session <- bow("https://www.amazon.com/", user_agent = "Educational")
+category_df <- data.frame(
+  URL = unlist(categories),
+  Category = names(categories),
+  stringsAsFactors = FALSE
+)
+
+print(category_df)
+
+
 ```
 
