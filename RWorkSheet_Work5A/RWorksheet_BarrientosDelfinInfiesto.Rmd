@@ -287,7 +287,7 @@ amazon_products <- function(url) {
   )
 }
 
-# Replace `urls` with the list of Amazon product URLs you provided
+
 categories <- list(
   Electronics = "https://www.amazon.com/s?bbn=16225007011&rh=n%3A16225007011%2Cn%3A172282&dc&qid=1733999643&rnid=2941120011&ref=sr_nr_n_1",
   Books = "https://www.amazon.com/b?node=283155&ccs_id=c20df0d4-c9df-4d6d-8c00-34888c8fa5b1",
