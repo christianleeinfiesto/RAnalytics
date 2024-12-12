@@ -387,8 +387,128 @@ luggage_category
 library(ggplot2)
 library(dplyr)
 
+df_combined <- rbind(
+  cbind(electronics_category, Product_Name = electronics_category$Description, Category = "Electronics"),
+  cbind(books_category, Product_Name = books_category$Description, Category = "Books"),
+  cbind(toys_category, Product_Name = toys_category$Description, Category = "Toys and Games"),
+  cbind(baby_category, Product_Name = baby_category$Description, Category = "Baby"),
+  cbind(luggage_category, Product_Name = luggage_category$Description, Category = "Luggage")
+)
+
+df_combined$Price <- as.numeric(as.character(df_combined$Price))
+df_combined$Ratings <- as.numeric(as.character(df_combined$Ratings))
+
+
+df_combined <- df_combined %>%
+  mutate(rating_to_price_ratio = Ratings / Price)
+
+
+if (any(is.na(df_combined$rating_to_price_ratio))) {
+  df_combined <- df_combined[!is.na(df_combined$rating_to_price_ratio), ]
+}
+
+categories <- unique(df_combined$Category)
+
+par(mfrow = c(ceiling(length(categories) / 2), 2))
+
+for (category in categories) {
+  category_products <- df_combined %>% filter(Category == category)
+  short_name <- sapply(category_products$Description, function(x) {
+    paste(strsplit(x, " ")[[1]][1:2], collapse = " ")
+  })
+  
+  
+  ylim <- range(category_products$rating_to_price_ratio, na.rm = TRUE)
+  
+  barplot(
+    category_products$rating_to_price_ratio,
+    names.arg = short_name,
+    main = paste("Rating to Price Ratio for", category),
+    ylab = "Rating to Price Ratio",
+    col = rainbow(nrow(category_products)),
+    las = 2,
+    cex.names = 0.5,
+    ylim = ylim
+  )
+}
+
 
 ```
+```{r}
+#9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
+library(ggplot2)
+library(dplyr)
+
+df_combined <- rbind(
+  cbind(electronics_category, Product_Name = electronics_category$Description, Category = "Electronics"),
+  cbind(books_category, Product_Name = books_category$Description, Category = "Books"),
+  cbind(toys_category, Product_Name = toys_category$Description, Category = "Toys and Games"),
+  cbind(baby_category, Product_Name = baby_category$Description, Category = "Baby"),
+  cbind(luggage_category, Product_Name = luggage_category$Description, Category = "Luggage")
+)
+
+df_combined$Price <- as.numeric(as.character(df_combined$Price))
+df_combined$Ratings <- as.numeric(as.character(df_combined$Ratings))
+
+ggplot(df_combined, aes(x = Price, y = Ratings, color = Category)) +
+  geom_point() +
+  labs(title = "Price vs Ratings for Amazon Products",
+       x = "Price",
+       y = "Ratings") +
+  theme_minimal()
+
+```
+```{r}
+#10. Rank the products of each category by price and ratings. Explain briefly. 
+# Electronics
+electronics_ranked <- electronics_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+# Books
+books_ranked <- books_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+# Toys and Games
+toys_ranked <- toys_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+# Baby Products
+baby_ranked <- baby_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+# Luggage
+luggage_ranked <- luggage_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+print(electronics_ranked)
+print(books_ranked)
+print(toys_ranked)
+print(baby_ranked)
+print(luggage_ranked)
+#The data frames present products categorized by type, displaying each product’s name and description along with its rank based on price (lower prices receive higher ranks) and rating (higher ratings receive higher ranks). In cases where there are ties, the higher rank is given precedence.
+```
+
+
 
 
 
