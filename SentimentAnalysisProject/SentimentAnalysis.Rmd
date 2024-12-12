@@ -9,18 +9,122 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
-library(readr)
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(stringr)
+library(syuzhet) 
+
+tweetsDF <- read_excel("C:/PROJ/tweetsDF.xlsx")
+
+
+View(tweetsDF)
+#cleaning the columns names to reduce the risk of confusion
+tweetsDF <- tweetsDF %>% 
+  rename(
+    screen_name = screenName,
+    tweet = text,
+    created_at = created,
+    source = statusSource,
+    rounded_time = Created_At_Round,
+    tweet_source = tweetSource
+  )
+
+  tweetsDF <- tweetsDF %>%
+    filter(!is.na(tweet), !is.na(created_at))
+  
+  #converting 'created_at' to POSIXct format to enable accurate time-based analysis of tweet trends.
+
+  tweetsDF$created_at <- as.POSIXct(tweetsDF$created_at, format = "%Y-%m-%d %H:%M:%S")
+
+
+  str(tweetsDF)
+  # Trend Analysis
+  # number of tweets over time
+ggplot(tweets_trend, aes(x = date, y = tweet_count)) +
+  geom_line(color = "red", linewidth = 1) +
+  geom_point(color = "blue", size = 2) +
+  geom_smooth(color = "darkred", linetype = "dashed", se = FALSE) +
+  scale_x_date(date_labels = "%b %d, %Y", date_breaks = "1 week") +
+  labs(
+    title = "Enhanced Trend of Tweets Over Time",
+    x = "Date",
+    y = "Number of Tweets",
+    caption = "Data Source: tweetsDF"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+```
+The graph titled "Trend of Tweets Over Time" shows how many tweets were posted each day over a certain time period. The dates are on the x-axis, and the number of tweets is on the y-axis. The red line connects the daily tweet counts, making it easy to see when there were more tweets or fewer tweets. Some days have a lot more tweets, which could mean something important happened, while other days have fewer tweets. This graph helps us see patterns in how people were posting tweets over time.Peaks in the graph indicate days when more tweets were posted, which could mean something important happened, while dips represent days with fewer tweets. This graph helps us see patterns in how people were posting tweets over time, providing insights into when users were most active or when discussions peaked. The steady or fluctuating nature of the line reflects how dynamic the conversation is on the platform.
+
+```{r}
+library(readxl)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(stringr)
 library(syuzhet)
-getwd()  
-setwd("C:/Users/USER/Downloads")
-tweetsDF <- read.csv("tweetsDF.csv")
 
-View(tweetsDF)
+tweetsDF <- read_excel("C:/PROJ/tweetsDF.xlsx")
+#cleaning the columns names to reduce the risk of confusion
+tweetsDF <- tweetsDF %>% 
+  rename(
+    screen_name = screenName,
+    tweet = text,
+    created_at = created,
+    source = statusSource,
+    rounded_time = Created_At_Round,
+    tweet_source = tweetSource
+  )
+#Sentiment Analysis
+tweets_sentiment <- tweetsDF %>%
+  mutate(sentiment_score = get_sentiment(tweet, method = "bing")) %>%
+  group_by(date = as.Date(created_at)) %>%
+  summarise(
+    avg_sentiment = mean(sentiment_score),
+    positive_tweets = sum(sentiment_score > 0),
+    negative_tweets = sum(sentiment_score < 0)
+  )
+#calculating sentiment scores for each tweet using the 'bing' lexicon from the syuzhet package.
+sentiment_plot <- ggplot(tweets_sentiment, aes(x = date)) +
+  geom_line(aes(y = avg_sentiment, color = "Average Sentiment"), linewidth = 1) +
+  geom_point(aes(y = avg_sentiment, color = "Average Sentiment"), size = 2) +
+  geom_line(aes(y = positive_tweets, color = "Positive Tweets"), linewidth = 1) +
+  geom_point(aes(y = positive_tweets, color = "Positive Tweets"), size = 2) +
+  geom_line(aes(y = negative_tweets, color = "Negative Tweets"), linewidth = 1) +
+  geom_point(aes(y = negative_tweets, color = "Negative Tweets"), size = 2) +
+  labs(
+    title = "Sentiment Analysis of Tweets Over Time",
+    subtitle = "Trends for Average Sentiment, Positive Tweets, and Negative Tweets",
+    x = "Date",
+    y = "Sentiment/Count",
+    color = "Metrics"
+  ) +
+  scale_color_manual(values = c(
+    "Average Sentiment" = "blue",
+    "Positive Tweets" = "green",
+    "Negative Tweets" = "red"
+  )) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.title = element_text(face = "bold"),
+    panel.grid.major = element_line(color = "gray", size = 0.2),
+    panel.grid.minor = element_blank()
+  )
+
+print(sentiment_plot)
+
+
 ```
+The graph titled "Sentiment Analysis of Tweets Over Time" shows the daily trends for Average Sentiment, Positive Tweets, and Negative Tweets. 
+
 
 
 
