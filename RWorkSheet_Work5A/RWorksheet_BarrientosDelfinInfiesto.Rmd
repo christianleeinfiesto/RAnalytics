@@ -23,25 +23,20 @@ url <- "https://www.imdb.com/chart/toptv/?sort=rank%2Casc"
 session <- bow(url, user_agent = "Educational")
 session
 
-
 title_elements <- read_html(url) %>%
   html_nodes('.ipc-title__text') %>%
   html_text()
 
-titles_df <- as.data.frame(title_elements[3:27], stringsAsFactors = FALSE)
+titles_df <- as.data.frame(title_elements[3:52], stringsAsFactors = FALSE)
 colnames(titles_df) <- "Ranked_Titles"
-
 
 split_titles <- strsplit(as.character(titles_df$Ranked_Titles), "\\.", fixed = FALSE)
 titles_split_df <- data.frame(do.call(rbind, split_titles), stringsAsFactors = FALSE)
-
 
 colnames(titles_split_df) <- c("Rank", "Title")
 titles_split_df$Title <- trimws(titles_split_df$Title)
 
 rank_title <- titles_split_df
-rank_title
-
 
 rating_elements <- read_html(url) %>%
   html_nodes('.ipc-rating-star--rating') %>%
@@ -52,25 +47,17 @@ voter_elements <- read_html(url) %>%
   html_text()
 voters_cleaned <- gsub('[()]', '', voter_elements)
 
-
 episode_elements <- read_html(url) %>%
-  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
-  html_text()
-episodes_cleaned <- gsub('[eps]', '', episode_elements)
-episodes_count <- as.numeric(episodes_cleaned)
-
-episode_elements <- read_html(url) %>%
-  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(2)') %>%
   html_text()
 episodes_cleaned <- gsub('[eps]', '', episode_elements)
 episodes_count <- as.numeric(episodes_cleaned)
 
 years <- read_html(url) %>%
-  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(1)') %>%
   html_text()
 
 min_length <- min(nrow(rank_title), length(rating_elements), length(voters_cleaned), length(episodes_count), length(years))
-
 
 rank_title <- rank_title[1:min_length, ]
 rating_elements <- rating_elements[1:min_length]
@@ -79,58 +66,17 @@ episodes_count <- episodes_count[1:min_length]
 years <- years[1:min_length]
 
 top_tv_shows <- data.frame(
-  Rank = rank_title$Rank,
-  Title = rank_title$Title,
-  Rating = rating_elements,
-  Voters = voters_cleaned,
-  Episodes = episodes_count,
-  Year = years
+  Rank = rank_title$Rank[1:50],
+  Title = rank_title$Title[1:50],
+  Rating = rating_elements[1:50],
+  Voters = voters_cleaned[1:50],
+  Episodes = episodes_count[1:50],
+  Year = years[1:50]
 )
 
-
-home_link <- 'https://www.imdb.com/chart/toptv/'
-main_page_html <- read_html(home_link)
-
-show_links <- main_page_html %>%
-  html_nodes("a.ipc-title-link-wrapper") %>%
-  html_attr("href")
-
-show_details_list <- lapply(show_links, function(link) {
-  complete_link <- paste0("https://imdb.com", link)
-  
-  show_page <- read_html(complete_link)
-  review_link <- show_page %>% 
-    html_nodes('a.isReview') %>% 
-    html_attr("href")
-  
-  critic_reviews <- show_page %>%
-    html_nodes("span.score") %>%
-    html_text()
-  critic_df <- data.frame(Critic_Reviews = critic_reviews[2], stringsAsFactors = FALSE)
-  
-  popularity_score <- show_page %>%
-    html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
-    html_text()
-  
-  user_reviews_page <- read_html(paste0("https://imdb.com", review_link[1]))
-  user_reviews_count <- user_reviews_page %>%
-    html_nodes('[data-testid="tturv-total-reviews"]') %>%
-    html_text()
-  
-  return(data.frame(
-    Show_Link = complete_link,
-    User_Reviews = user_reviews_count,
-    Critic_Reviews = critic_df,
-    Popularity_Rating = popularity_score
-  )) 
-})
-
-show_details_df <- do.call(rbind, show_details_list)
-
-final_shows_df <- cbind(top_tv_shows, show_details_df)
-
-print(final_shows_df)
-View(final_shows_df)
+top_tv_shows <- top_tv_shows[1:50, ]
+print(top_tv_shows)
+View(top_tv_shows)
 
 
 ```
@@ -140,15 +86,15 @@ View(final_shows_df)
 library(rvest)
 library(dplyr)
 
-url_5shows <- c(
+url_of_5Shows <- c(
   "https://www.imdb.com/title/tt0903747/reviews/?ref_=ttexr_ql_2",
-  "https://www.imdb.com/title/tt2098220/?ref_=chttvtp_t_33",
-  "https://www.imdb.com/title/tt2861424/?ref_=chttvtp_t_17",
-  "https://www.imdb.com/title/tt2560140/?ref_=chttvtp_t_23",
-  "https://www.imdb.com/title/tt11126994/?ref_=chttvtp_t_25"
+  "https://www.imdb.com/title/tt2098220/reviews/?ref_=tt_ov_urv",
+  "https://www.imdb.com/title/tt2861424/reviews/?ref_=tt_ov_urv",
+  "https://www.imdb.com/title/tt2560140/reviews/?ref_=tt_ov_urv",
+  "https://www.imdb.com/title/tt11126994/reviews/?ref_=tt_ov_urv"
 )
 
-five_df <- data.frame(
+five_shows_url_df <- data.frame(
   Title = c(
     "Breaking Bad",
     "Hunter x Hunter",
@@ -156,54 +102,76 @@ five_df <- data.frame(
     "Attack on Titan", 
     "Arcane"
   ),
-  URLs = url_5shows
+  URLs = url_of_5Shows
 ) 
+
 
 scrape_reviews <- function(show_url) {
   page <- read_html(show_url)
   
+ 
   usernames <- page %>%
     html_nodes('[data-testid="author-link"]') %>%
     html_text()
   
+
   review_dates <- page %>%
     html_nodes('li.review-date') %>%
     html_text()
-  
+
   user_rating <- page %>%
     html_nodes('span.ipc-rating-star--rating') %>%
     html_text()
   
+  
   rev_title <- page %>%
     html_nodes('h3.ipc-title__text') %>%
     html_text()
+  
   
   text_rev <- page %>%
     html_nodes('div.ipc-html-content-inner-div') %>%
     html_text()
   
   
-  min_reviews <- min(length(usernames), length(review_dates), length(user_rating),
-                     length(rev_title), length(text_rev))
+  helpful_rev <- page %>%
+    html_nodes('div.ipc-list-card__actions') %>%
+    html_text()
+  
+  
+  not_helpful <- page %>%
+    html_nodes('span.count--down') %>%
+    html_text()
+  
+  
+  max_length <- min(
+    length(usernames),
+    length(review_dates),
+    length(user_rating),
+    length(rev_title),
+    length(text_rev)
+  )
   
   data.frame(
-    Usernames = head(usernames, min_reviews), 
-    Dates = head(review_dates, min_reviews),
-    User_Rating = head(user_rating, min_reviews), 
-    Review_Title = head(rev_title, min_reviews),
-    Text_Reviews = head(text_rev, min_reviews)
+    Usernames = head(usernames, max_length), 
+    Dates = head(review_dates, max_length),
+    User_Rating = head(user_rating, max_length), 
+    Review_Title = head(rev_title, max_length),
+    Text_Reviews = head(text_rev, max_length)
   )
 }
 
-reviews_data <- lapply(five_df$URLs, scrape_reviews)
-names(reviews_data) <- five_df$TitleS
-
-
+reviews_data <- lapply(five_shows_url_df$URLs, scrape_reviews)
+names(reviews_data) <- five_shows_url_df$Title
 reviews_data[["Breaking Bad"]]
 reviews_data[["Hunter x Hunter"]]
 reviews_data[["Rick and Morty"]]
 reviews_data[["Attack on Titan"]]
 reviews_data[["Arcane"]]
+
+```
+
+
 
 
 ```
@@ -387,6 +355,7 @@ luggage_category
 library(ggplot2)
 library(dplyr)
 
+
 df_combined <- rbind(
   cbind(electronics_category, Product_Name = electronics_category$Description, Category = "Electronics"),
   cbind(books_category, Product_Name = books_category$Description, Category = "Books"),
@@ -395,30 +364,33 @@ df_combined <- rbind(
   cbind(luggage_category, Product_Name = luggage_category$Description, Category = "Luggage")
 )
 
+
 df_combined$Price <- as.numeric(as.character(df_combined$Price))
 df_combined$Ratings <- as.numeric(as.character(df_combined$Ratings))
-
-
 df_combined <- df_combined %>%
   mutate(rating_to_price_ratio = Ratings / Price)
 
 
-if (any(is.na(df_combined$rating_to_price_ratio))) {
-  df_combined <- df_combined[!is.na(df_combined$rating_to_price_ratio), ]
-}
+df_combined <- df_combined[!is.na(df_combined$rating_to_price_ratio), ]
+
 
 categories <- unique(df_combined$Category)
 
+
 par(mfrow = c(ceiling(length(categories) / 2), 2))
+
 
 for (category in categories) {
   category_products <- df_combined %>% filter(Category == category)
-  short_name <- sapply(category_products$Description, function(x) {
+  
+  
+  short_name <- sapply(category_products$Product_Name, function(x) {
     paste(strsplit(x, " ")[[1]][1:2], collapse = " ")
   })
   
   
   ylim <- range(category_products$rating_to_price_ratio, na.rm = TRUE)
+  
   
   barplot(
     category_products$rating_to_price_ratio,
@@ -431,6 +403,7 @@ for (category in categories) {
     ylim = ylim
   )
 }
+
 
 
 ```
