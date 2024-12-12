@@ -279,7 +279,7 @@ shows_by_year <- top_tv_shows %>%
 
 
 ggplot(shows_by_year, aes(x = Year, y = Count)) +
-  geom_line(color = "blue", size = 1) +
+  geom_line(color = "blue", size = 2) +
   geom_point(color = "red", size = 2) +
   labs(title = "Number of TV Shows Released by Year", 
        x = "Year", 
@@ -294,5 +294,17 @@ cat("The year with the most number of TV shows released is:", most_shows_year$Ye
 
 ```{r}
 #4. 
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+library(stringr)
+
+url <- "https://www.amazon.com/"
+session <- bow(url, 
+               user_agent = "Educational")
+session
+
+
 ```
 
