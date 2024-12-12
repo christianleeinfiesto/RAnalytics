@@ -302,7 +302,25 @@ category_df <- data.frame(
 )
 
 print(category_df)
+products <- lapply(category_df$URL, amazon_products)
+names(products) <- category_df$Category
 
+
+reviews_scrape <- function(url) {
+  page <- read_html(url)
+  
+  review_links <- page %>%
+    html_nodes("a.a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal") %>%
+    html_attr("href") %>%
+    unique() %>%
+    paste0("https://www.amazon.com", .)
+  
+  data.frame(
+    review_links = review_links[1:30]
+  )
+}
+
+review_links_df <- lapply(category_df$URL, reviews_scrape)
 
 ```
 
