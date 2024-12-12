@@ -174,21 +174,26 @@ reviews_data[["Arcane"]]
 
 
 
-```
+
 ```{r}
-#3. 
-ggplot(shows_by_year, aes(x = Year, y = Count)) +
-  geom_point(color = "blue") +
+#3  
+library(ggplot2)
+
+years <- substr(years, 1, 4)
+years <- as.numeric(years) 
+
+ggplot(data.frame(Year = years), aes(x = Year)) +
+  geom_line(stat = "count", color = "blue") +
   labs(title = "Number of TV Shows Released by Year",
        x = "Year",
        y = "Number of TV Shows") +
   theme_minimal()
 
-
-most_shows_year <- shows_by_year %>% 
-  filter(Count == max(Count)) %>%
-  select(Year, Count)
+most_shows_year <- as.data.frame(table(years))
+most_shows_year <- most_shows_year[which.max(most_shows_year$Freq), ]
 print(most_shows_year)
+
+
 
 
 ```
@@ -226,6 +231,7 @@ category_df <- data.frame(
 
 print(category_df)
 ```
+
 ```{r}
 #5 
 amazon_products <- function(url) {
@@ -341,6 +347,7 @@ luggage_category
 
 
 ```
+
 ```{r}
 # 6. Describe the data you have extracted.
   # The extracted data consists of information from the five categories that were selected from Amazon. These categories include Electronics, Books, Toys and Games, Baby, and Luggage. For each category, 30 products were selected, resulting in a total of 150 products with details including price, description, ratings, and reviews for each product
@@ -350,6 +357,7 @@ luggage_category
   # The data extracted from Amazon can be used to analyze the pricing, ratings, and reviews of products in different categories. This information can be used to compare products within each category, identify trends, and make informed purchasing decisions. Additionally, the data can be used for market research, competitive analysis, and product recommendations.
 
 ```
+
 ```{r}
 #8. Create graphs regarding the use case. And briefly explain it.
 library(ggplot2)
@@ -407,6 +415,7 @@ for (category in categories) {
 
 
 ```
+
 ```{r}
 #9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
 library(ggplot2)
