@@ -4,6 +4,10 @@ author: "Barrientos, Delfin, Infiesto"
 date: "2024-11-06"
 output: pdf_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 #Extracting TV Shows Reviews
 
 #1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
@@ -205,90 +209,19 @@ reviews_data[["Arcane"]]
 ```
 ```{r}
 #3. 
-library(ggplot2)
-library(polite)
-library(httr)
-library(rvest)
-library(dplyr)
-
-url <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
-session <- bow(url, user_agent = "Educational")
-session
-
-title_elements <- read_html(url) %>%
-  html_nodes('.ipc-title__text') %>%
-  html_text()
-
-titles_df <- as.data.frame(title_elements[3:52], stringsAsFactors = FALSE)
-colnames(titles_df) <- "Ranked_Titles"
-
-split_titles <- strsplit(as.character(titles_df$Ranked_Titles), "\\.", fixed = FALSE)
-titles_split_df <- data.frame(do.call(rbind, split_titles), stringsAsFactors = FALSE)
-
-colnames(titles_split_df) <- c("Rank", "Title")
-titles_split_df$Title <- trimws(titles_split_df$Title)
-
-rank_title <- titles_split_df
-rank_title
-
-voter_elements <- read_html(url) %>%
-  html_nodes('.ipc-rating-star--voteCount') %>%
-  html_text()
-voters_cleaned <- gsub('[()]', '', voter_elements)
-
-episode_elements <- read_html(url) %>%
-  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
-  html_text()
-episodes_cleaned <- gsub('[eps]', '', episode_elements)
-episodes_count <- as.numeric(episodes_cleaned)
-
-years <- read_html(url) %>%
-    html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(1)') %>%
-  html_text()
-
-cat("Rank and Title:", nrow(rank_title), "\n")
-cat("Ratings:", length(rating_elements), "\n")
-cat("Voters:", length(voters_cleaned), "\n")
-cat("Episodes:", length(episodes_count), "\n")
-cat("Years:", length(years), "\n")
-
-min_length <- min(nrow(rank_title), length(rating_elements), length(voters_cleaned), length(episodes_count), length(years))
-
-rank_title <- rank_title[1:min_length, ]
-rating_elements <- rating_elements[1:min_length]
-voters_cleaned <- voters_cleaned[1:min_length]
-episodes_count <- episodes_count[1:min_length]
-years <- years[1:min_length]
-
-top_tv_shows <- data.frame(
-  Rank = rank_title[,1],
-  Title = rank_title[,2],
-  Rating = rating_elements,
-  Voters = voters_cleaned,
-  Episodes = episodes_count,
-  Year = years
-)
-
-
-top_tv_shows <- top_tv_shows %>% filter(!is.na(Year) & Year != "")
-
-
-shows_by_year <- top_tv_shows %>% 
-  group_by(Year) %>% 
-  summarize(Count = n())
-
-
 ggplot(shows_by_year, aes(x = Year, y = Count)) +
-  geom_line(color = "blue", size = 2) +
-  geom_point(color = "red", size = 2) +
-  labs(title = "Number of TV Shows Released by Year", 
-       x = "Year", 
+  geom_point(color = "blue") +
+  labs(title = "Number of TV Shows Released by Year",
+       x = "Year",
        y = "Number of TV Shows") +
   theme_minimal()
 
 
-most_shows_year <- shows_by_year[which.max(shows_by_year$Count), ]
-cat("The year with the most number of TV shows released is:", most_shows_year$Year, "with", most_shows_year$Count, "shows.\n")
+most_shows_year <- shows_by_year %>% 
+  filter(Count == max(Count)) %>%
+  select(Year, Count)
+print(most_shows_year)
+
 
 ```
 
@@ -300,10 +233,6 @@ library(dplyr)
 library(polite)
 library(stringr)
 
-url <- "https://www.amazon.com/"
-session <- bow(url, 
-               user_agent = "Educational")
-session
 
 categories <- list(
   Electronics = "https://www.amazon.com/s?bbn=16225007011&rh=n%3A16225007011%2Cn%3A172282&dc&qid=1733999643&rnid=2941120011&ref=sr_nr_n_1",
@@ -312,6 +241,50 @@ categories <- list(
   Baby = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dbaby-products-intl-ship&field-keywords=&crid=3E4FRJD7G2VJW&sprefix=%2Cbaby-products-intl-ship%2C347",
   Luggage = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dluggage-intl-ship&field-keywords=&crid=6RHDAYK51SOH&sprefix=%2Cluggage-intl-ship%2C311"
 )
+
+
+url <- "https://www.amazon.com/"
+session <- bow(url, 
+               user_agent = "Educational")
+session
+
+
+category_df <- data.frame(
+  URL = unlist(categories),
+  Category = names(categories),
+  stringsAsFactors = FALSE
+)
+
+print(category_df)
+```
+```{r}
+#5 
+amazon_products <- function(url) {
+  page <- read_html(url)
+  
+  name <- page %>%
+    html_nodes(".a-size-medium.a-spacing-none.a-color-base.a-text-normal") %>%
+    html_text() 
+  
+  price <- page %>%
+    html_nodes("span.a-price-whole") %>%
+    html_text() %>%
+    gsub("\\.", "", .) %>%
+    as.numeric()
+  
+  ratings <- page %>%
+    html_nodes("span.a-icon-alt") %>%
+    html_text() %>%
+    gsub(" out of 5 stars", "", .) %>%
+    as.numeric()
+  
+  
+  data.frame(
+    Description = name[1:30],
+    Price = price[1:30],
+    Ratings = ratings[1:30]
+  )
+}
 
 ```
 
