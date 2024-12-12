@@ -234,116 +234,109 @@ print(category_df)
 
 ```{r}
 #5 
+library(rvest)
+library(dplyr)
+library(stringr)
+
 amazon_products <- function(url) {
-  page <- read_html(url)
-  
+  page <- tryCatch(read_html(url), error = function(e) NULL)
+  if (is.null(page)) return(data.frame(Description = NA, Price = NA, Ratings = NA))
+
   name <- page %>%
     html_nodes(".a-size-medium.a-spacing-none.a-color-base.a-text-normal") %>%
-    html_text() 
-  
+    html_text()
+
   price <- page %>%
     html_nodes("span.a-price-whole") %>%
     html_text() %>%
     gsub("\\.", "", .) %>%
     as.numeric()
-  
+
   ratings <- page %>%
     html_nodes("span.a-icon-alt") %>%
     html_text() %>%
     gsub(" out of 5 stars", "", .) %>%
     gsub(" Stars & Up", "", .) %>%
     as.numeric()
-  
+
+  num_items <- min(length(name), length(price), length(ratings))
   data.frame(
-    Description = name[1:30],
-    Price = price[1:30],
-    Ratings = ratings[1:30]
+    Description = name[1:num_items],
+    Price = price[1:num_items],
+    Ratings = ratings[1:num_items]
   )
 }
 
-
 categories <- list(
   Electronics = "https://www.amazon.com/s?bbn=16225007011&rh=n%3A16225007011%2Cn%3A172282&dc&qid=1733999643&rnid=2941120011&ref=sr_nr_n_1",
-  Books = "https://www.amazon.com/b?node=283155&ccs_id=c20df0d4-c9df-4d6d-8c00-34888c8fa5b1",
-  Toys_and_Games = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dtoys-and-games-intl-ship&field-keywords=&crid=17DE3O4GROMUT&sprefix=%2Ctoys-and-games-intl-ship%2C382",
-  Baby = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dbaby-products-intl-ship&field-keywords=&crid=3E4FRJD7G2VJW&sprefix=%2Cbaby-products-intl-ship%2C347",
-  Luggage = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dluggage-intl-ship&field-keywords=&crid=6RHDAYK51SOH&sprefix=%2Cluggage-intl-ship%2C311"
+  Books = "https://www.amazon.com/b?node=283155",
+  Toys_and_Games = "https://www.amazon.com/s?rh=n%3A165793011",
+  Baby = "https://www.amazon.com/s?rh=n%3A165797011",
+  Luggage = "https://www.amazon.com/s?rh=n%3A15743261"
 )
 
-session <- bow("https://www.amazon.com/", user_agent = "Educational")
 category_df <- data.frame(
   URL = unlist(categories),
   Category = names(categories),
   stringsAsFactors = FALSE
 )
 
-print(category_df)
-
-
 products <- lapply(category_df$URL, amazon_products)
 names(products) <- category_df$Category
 
-
-
 reviews_scrape <- function(url) {
-  page <- read_html(url)
-  
+  page <- tryCatch(read_html(url), error = function(e) NULL)
+  if (is.null(page)) return(data.frame(review_links = NA))
+
   review_links <- page %>%
     html_nodes("a.a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal") %>%
     html_attr("href") %>%
     unique() %>%
     paste0("https://www.amazon.com", .)
-  
-  data.frame(
-    review_links = review_links
-  )
+
+  data.frame(review_links = review_links)
 }
 
 review_links_df <- lapply(category_df$URL, reviews_scrape)
 
-
 reviews_text <- function(urls) {
-  
-  results <- data.frame(
-    Reviews = character(length(urls)),  
-    stringsAsFactors = FALSE
-  )
-  
+  results <- vector("list", length(urls))
+
   for (i in seq_along(urls)) {
     if (!is.na(urls[i])) {
-      page <- read_html(urls[i])
-      reviews_data <- page %>%
-        html_nodes("p.a-spacing-small") %>%
-        .[1] %>%
-        html_text()
-
-      results$Reviews[i] <- if (length(reviews_data) > 0) reviews_data else NA
+      page <- tryCatch(read_html(urls[i]), error = function(e) NULL)
+      if (!is.null(page)) {
+        reviews_data <- page %>%
+          html_nodes("p.a-spacing-small") %>%
+          html_text()
+        results[[i]] <- if (length(reviews_data) > 0) reviews_data else NA
+      }
     }
   }
-  
-  return(results)
+
+  return(data.frame(Reviews = unlist(results, use.names = FALSE)))
 }
 
-
-
-electronucs_reviews <- reviews_text(review_links_df[[1]]$review_links)
+electronics_reviews <- reviews_text(review_links_df[[1]]$review_links)
 books_reviews <- reviews_text(review_links_df[[2]]$review_links)
 toys_reviews <- reviews_text(review_links_df[[3]]$review_links)
 baby_reviews <- reviews_text(review_links_df[[4]]$review_links)
 luggage_reviews <- reviews_text(review_links_df[[5]]$review_links)
 
-
 electronics_category <- cbind(products[["Electronics"]], electronics_reviews)
-books_category <- cbind(products[["Books"]], laptop_reviews)
-toys_category <- cbind(products[["Toys"]], accessories_reviews)
-baby_category <- cbind(products[["Baby"]], sports_reviews)
+books_category <- cbind(products[["Books"]], books_reviews)
+toys_category <- cbind(products[["Toys_and_Games"]], toys_reviews)
+baby_category <- cbind(products[["Baby"]], baby_reviews)
 luggage_category <- cbind(products[["Luggage"]], luggage_reviews)
 
-electronics_category
-books_category
-toys_category
-baby_category
-luggage_category
+list(
+  Electronics = electronics_category,
+  Books = books_category,
+  Toys_and_Games = toys_category,
+  Baby = baby_category,
+  Luggage = luggage_category
+)
+
 
 
 ```
@@ -421,23 +414,19 @@ for (category in categories) {
 library(ggplot2)
 library(dplyr)
 
-df_combined <- rbind(
-  cbind(electronics_category, Product_Name = electronics_category$Description, Category = "Electronics"),
-  cbind(books_category, Product_Name = books_category$Description, Category = "Books"),
-  cbind(toys_category, Product_Name = toys_category$Description, Category = "Toys and Games"),
-  cbind(baby_category, Product_Name = baby_category$Description, Category = "Baby"),
-  cbind(luggage_category, Product_Name = luggage_category$Description, Category = "Luggage")
-)
-
-df_combined$Price <- as.numeric(as.character(df_combined$Price))
-df_combined$Ratings <- as.numeric(as.character(df_combined$Ratings))
-
 ggplot(df_combined, aes(x = Price, y = Ratings, color = Category)) +
   geom_point() +
-  labs(title = "Price vs Ratings for Amazon Products",
-       x = "Price",
-       y = "Ratings") +
-  theme_minimal()
+  facet_wrap(~ Category, nrow = 2, scales = "free_y") +
+  labs(title = "Price vs. Rating by Category", x = "Price", y = "Ratings") +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  ) +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(limits = c(4, 5)) 
 
 ```
 ```{r}
