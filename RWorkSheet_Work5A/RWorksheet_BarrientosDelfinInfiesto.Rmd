@@ -4,6 +4,10 @@ author: "Barrientos, Delfin, Infiesto"
 date: "2024-11-06"
 output: pdf_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 #Extracting TV Shows Reviews
 
 #1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
@@ -16,202 +20,6 @@ library(dplyr)
 library(ggplot2)
 
 url <- "https://www.imdb.com/chart/toptv/?sort=rank%2Casc"
-session <- bow(url, user_agent = "Educational")
-session
-
-
-title_elements <- read_html(url) %>%
-  html_nodes('.ipc-title__text') %>%
-  html_text()
-
-titles_df <- as.data.frame(title_elements[3:27], stringsAsFactors = FALSE)
-colnames(titles_df) <- "Ranked_Titles"
-
-
-split_titles <- strsplit(as.character(titles_df$Ranked_Titles), "\\.", fixed = FALSE)
-titles_split_df <- data.frame(do.call(rbind, split_titles), stringsAsFactors = FALSE)
-
-
-colnames(titles_split_df) <- c("Rank", "Title")
-titles_split_df$Title <- trimws(titles_split_df$Title)
-
-rank_title <- titles_split_df
-rank_title
-
-
-rating_elements <- read_html(url) %>%
-  html_nodes('.ipc-rating-star--rating') %>%
-  html_text()
-
-voter_elements <- read_html(url) %>%
-  html_nodes('.ipc-rating-star--voteCount') %>%
-  html_text()
-voters_cleaned <- gsub('[()]', '', voter_elements)
-
-
-episode_elements <- read_html(url) %>%
-  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
-  html_text()
-episodes_cleaned <- gsub('[eps]', '', episode_elements)
-episodes_count <- as.numeric(episodes_cleaned)
-
-episode_elements <- read_html(url) %>%
-  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
-  html_text()
-episodes_cleaned <- gsub('[eps]', '', episode_elements)
-episodes_count <- as.numeric(episodes_cleaned)
-
-years <- read_html(url) %>%
-  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(1)') %>%
-  html_text()
-
-min_length <- min(nrow(rank_title), length(rating_elements), length(voters_cleaned), length(episodes_count), length(years))
-
-
-rank_title <- rank_title[1:min_length, ]
-rating_elements <- rating_elements[1:min_length]
-voters_cleaned <- voters_cleaned[1:min_length]
-episodes_count <- episodes_count[1:min_length]
-years <- years[1:min_length]
-
-top_tv_shows <- data.frame(
-  Rank = rank_title$Rank,
-  Title = rank_title$Title,
-  Rating = rating_elements,
-  Voters = voters_cleaned,
-  Episodes = episodes_count,
-  Year = years
-)
-
-
-home_link <- 'https://www.imdb.com/chart/toptv/'
-main_page_html <- read_html(home_link)
-
-show_links <- main_page_html %>%
-  html_nodes("a.ipc-title-link-wrapper") %>%
-  html_attr("href")
-
-show_details_list <- lapply(show_links, function(link) {
-  complete_link <- paste0("https://imdb.com", link)
-  
-  show_page <- read_html(complete_link)
-  review_link <- show_page %>% 
-    html_nodes('a.isReview') %>% 
-    html_attr("href")
-  
-  critic_reviews <- show_page %>%
-    html_nodes("span.score") %>%
-    html_text()
-  critic_df <- data.frame(Critic_Reviews = critic_reviews[2], stringsAsFactors = FALSE)
-  
-  popularity_score <- show_page %>%
-    html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
-    html_text()
-  
-  user_reviews_page <- read_html(paste0("https://imdb.com", review_link[1]))
-  user_reviews_count <- user_reviews_page %>%
-    html_nodes('[data-testid="tturv-total-reviews"]') %>%
-    html_text()
-  
-  return(data.frame(
-    Show_Link = complete_link,
-    User_Reviews = user_reviews_count,
-    Critic_Reviews = critic_df,
-    Popularity_Rating = popularity_score
-  )) 
-})
-
-show_details_df <- do.call(rbind, show_details_list)
-
-final_shows_df <- cbind(top_tv_shows, show_details_df)
-
-print(final_shows_df)
-View(final_shows_df)
-
-
-```
-
-```{r}
-#2. 
-library(rvest)
-library(dplyr)
-
-url_5shows <- c(
-  "https://www.imdb.com/title/tt0903747/reviews/?ref_=ttexr_ql_2",
-  "https://www.imdb.com/title/tt2098220/?ref_=chttvtp_t_33",
-  "https://www.imdb.com/title/tt2861424/?ref_=chttvtp_t_17",
-  "https://www.imdb.com/title/tt2560140/?ref_=chttvtp_t_23",
-  "https://www.imdb.com/title/tt11126994/?ref_=chttvtp_t_25"
-)
-
-five_df <- data.frame(
-  Title = c(
-    "Breaking Bad",
-    "Hunter x Hunter",
-    "Rick and Morty",
-    "Attack on Titan", 
-    "Arcane"
-  ),
-  URLs = url_5shows
-) 
-
-scrape_reviews <- function(show_url) {
-  page <- read_html(show_url)
-  
-  usernames <- page %>%
-    html_nodes('[data-testid="author-link"]') %>%
-    html_text()
-  
-  review_dates <- page %>%
-    html_nodes('li.review-date') %>%
-    html_text()
-  
-  user_rating <- page %>%
-    html_nodes('span.ipc-rating-star--rating') %>%
-    html_text()
-  
-  rev_title <- page %>%
-    html_nodes('h3.ipc-title__text') %>%
-    html_text()
-  
-  text_rev <- page %>%
-    html_nodes('div.ipc-html-content-inner-div') %>%
-    html_text()
-  
-  
-  min_reviews <- min(length(usernames), length(review_dates), length(user_rating),
-                     length(rev_title), length(text_rev))
-  
-  data.frame(
-    Usernames = head(usernames, min_reviews), 
-    Dates = head(review_dates, min_reviews),
-    User_Rating = head(user_rating, min_reviews), 
-    Review_Title = head(rev_title, min_reviews),
-    Text_Reviews = head(text_rev, min_reviews)
-  )
-}
-
-reviews_data <- lapply(five_df$URLs, scrape_reviews)
-names(reviews_data) <- five_df$TitleS
-
-
-reviews_data[["Breaking Bad"]]
-reviews_data[["Hunter x Hunter"]]
-reviews_data[["Rick and Morty"]]
-reviews_data[["Attack on Titan"]]
-reviews_data[["Arcane"]]
-
-
-```
-```{r}
-#3. 
-library(ggplot2)
-library(polite)
-library(httr)
-library(rvest)
-library(dplyr)
-
-url <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
 session <- bow(url, user_agent = "Educational")
 session
 
@@ -229,7 +37,10 @@ colnames(titles_split_df) <- c("Rank", "Title")
 titles_split_df$Title <- trimws(titles_split_df$Title)
 
 rank_title <- titles_split_df
-rank_title
+
+rating_elements <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--rating') %>%
+  html_text()
 
 voter_elements <- read_html(url) %>%
   html_nodes('.ipc-rating-star--voteCount') %>%
@@ -237,20 +48,14 @@ voter_elements <- read_html(url) %>%
 voters_cleaned <- gsub('[()]', '', voter_elements)
 
 episode_elements <- read_html(url) %>%
-  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(2)') %>%
   html_text()
 episodes_cleaned <- gsub('[eps]', '', episode_elements)
 episodes_count <- as.numeric(episodes_cleaned)
 
 years <- read_html(url) %>%
-    html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_nodes('span.sc-300a8231-7.eaXxft.cli-title-metadata-item:nth-of-type(1)') %>%
   html_text()
-
-cat("Rank and Title:", nrow(rank_title), "\n")
-cat("Ratings:", length(rating_elements), "\n")
-cat("Voters:", length(voters_cleaned), "\n")
-cat("Episodes:", length(episodes_count), "\n")
-cat("Years:", length(years), "\n")
 
 min_length <- min(nrow(rank_title), length(rating_elements), length(voters_cleaned), length(episodes_count), length(years))
 
@@ -261,34 +66,130 @@ episodes_count <- episodes_count[1:min_length]
 years <- years[1:min_length]
 
 top_tv_shows <- data.frame(
-  Rank = rank_title[,1],
-  Title = rank_title[,2],
-  Rating = rating_elements,
-  Voters = voters_cleaned,
-  Episodes = episodes_count,
-  Year = years
+  Rank = rank_title$Rank[1:50],
+  Title = rank_title$Title[1:50],
+  Rating = rating_elements[1:50],
+  Voters = voters_cleaned[1:50],
+  Episodes = episodes_count[1:50],
+  Year = years[1:50]
 )
 
-
-top_tv_shows <- top_tv_shows %>% filter(!is.na(Year) & Year != "")
-
-
-shows_by_year <- top_tv_shows %>% 
-  group_by(Year) %>% 
-  summarize(Count = n())
+top_tv_shows <- top_tv_shows[1:50, ]
+print(top_tv_shows)
+View(top_tv_shows)
 
 
+```
+
+```{r}
+#2. 
+library(rvest)
+library(dplyr)
+
+url_of_5Shows <- c(
+  "https://www.imdb.com/title/tt0903747/reviews/?ref_=ttexr_ql_2",
+  "https://www.imdb.com/title/tt2098220/reviews/?ref_=tt_ov_urv",
+  "https://www.imdb.com/title/tt2861424/reviews/?ref_=tt_ov_urv",
+  "https://www.imdb.com/title/tt2560140/reviews/?ref_=tt_ov_urv",
+  "https://www.imdb.com/title/tt11126994/reviews/?ref_=tt_ov_urv"
+)
+
+five_shows_url_df <- data.frame(
+  Title = c(
+    "Breaking Bad",
+    "Hunter x Hunter",
+    "Rick and Morty",
+    "Attack on Titan", 
+    "Arcane"
+  ),
+  URLs = url_of_5Shows
+) 
+
+
+scrape_reviews <- function(show_url) {
+  page <- read_html(show_url)
+  
+ 
+  usernames <- page %>%
+    html_nodes('[data-testid="author-link"]') %>%
+    html_text()
+  
+
+  review_dates <- page %>%
+    html_nodes('li.review-date') %>%
+    html_text()
+
+  user_rating <- page %>%
+    html_nodes('span.ipc-rating-star--rating') %>%
+    html_text()
+  
+  
+  rev_title <- page %>%
+    html_nodes('h3.ipc-title__text') %>%
+    html_text()
+  
+  
+  text_rev <- page %>%
+    html_nodes('div.ipc-html-content-inner-div') %>%
+    html_text()
+  
+  
+  helpful_rev <- page %>%
+    html_nodes('div.ipc-list-card__actions') %>%
+    html_text()
+  
+  
+  not_helpful <- page %>%
+    html_nodes('span.count--down') %>%
+    html_text()
+  
+  
+  max_length <- min(
+    length(usernames),
+    length(review_dates),
+    length(user_rating),
+    length(rev_title),
+    length(text_rev)
+  )
+  
+  data.frame(
+    Usernames = head(usernames, max_length), 
+    Dates = head(review_dates, max_length),
+    User_Rating = head(user_rating, max_length), 
+    Review_Title = head(rev_title, max_length),
+    Text_Reviews = head(text_rev, max_length)
+  )
+}
+
+reviews_data <- lapply(five_shows_url_df$URLs, scrape_reviews)
+names(reviews_data) <- five_shows_url_df$Title
+reviews_data[["Breaking Bad"]]
+reviews_data[["Hunter x Hunter"]]
+reviews_data[["Rick and Morty"]]
+reviews_data[["Attack on Titan"]]
+reviews_data[["Arcane"]]
+
+```
+
+
+
+
+```
+```{r}
+#3. 
 ggplot(shows_by_year, aes(x = Year, y = Count)) +
-  geom_line(color = "blue", size = 2) +
-  geom_point(color = "red", size = 2) +
-  labs(title = "Number of TV Shows Released by Year", 
-       x = "Year", 
+  geom_point(color = "blue") +
+  labs(title = "Number of TV Shows Released by Year",
+       x = "Year",
        y = "Number of TV Shows") +
   theme_minimal()
 
 
-most_shows_year <- shows_by_year[which.max(shows_by_year$Count), ]
-cat("The year with the most number of TV shows released is:", most_shows_year$Year, "with", most_shows_year$Count, "shows.\n")
+most_shows_year <- shows_by_year %>% 
+  filter(Count == max(Count)) %>%
+  select(Year, Count)
+print(most_shows_year)
+
 
 ```
 
@@ -300,11 +201,287 @@ library(dplyr)
 library(polite)
 library(stringr)
 
+
+
+categories <- list(
+  Electronics = "https://www.amazon.com/s?bbn=16225007011&rh=n%3A16225007011%2Cn%3A172282&dc&qid=1733999643&rnid=2941120011&ref=sr_nr_n_1",
+  Books = "https://www.amazon.com/b?node=283155&ccs_id=c20df0d4-c9df-4e6d-8c00-34888c8fa5b1",
+  Toys_and_Games = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dtoys-and-games-intl-ship&field-keywords=&crid=17DE3O4GROMUT&sprefix=%2Ctoys-and-games-intl-ship%2C382",
+  Baby = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dbaby-products-intl-ship&field-keywords=&crid=3E4FRJD7G2VJW&sprefix=%2Cbaby-products-intl-ship%2C347",
+  Luggage = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dluggage-intl-ship&field-keywords=&crid=6RHDAYK51SOH&sprefix=%2Cluggage-intl-ship%2C311"
+)
+
+
 url <- "https://www.amazon.com/"
 session <- bow(url, 
                user_agent = "Educational")
 session
 
 
+category_df <- data.frame(
+  URL = unlist(categories),
+  Category = names(categories),
+  stringsAsFactors = FALSE
+)
+
+print(category_df)
 ```
+```{r}
+#5 
+amazon_products <- function(url) {
+  page <- read_html(url)
+  
+  name <- page %>%
+    html_nodes(".a-size-medium.a-spacing-none.a-color-base.a-text-normal") %>%
+    html_text() 
+  
+  price <- page %>%
+    html_nodes("span.a-price-whole") %>%
+    html_text() %>%
+    gsub("\\.", "", .) %>%
+    as.numeric()
+  
+  ratings <- page %>%
+    html_nodes("span.a-icon-alt") %>%
+    html_text() %>%
+    gsub(" out of 5 stars", "", .) %>%
+    gsub(" Stars & Up", "", .) %>%
+    as.numeric()
+  
+  data.frame(
+    Description = name[1:30],
+    Price = price[1:30],
+    Ratings = ratings[1:30]
+  )
+}
+
+
+categories <- list(
+  Electronics = "https://www.amazon.com/s?bbn=16225007011&rh=n%3A16225007011%2Cn%3A172282&dc&qid=1733999643&rnid=2941120011&ref=sr_nr_n_1",
+  Books = "https://www.amazon.com/b?node=283155&ccs_id=c20df0d4-c9df-4d6d-8c00-34888c8fa5b1",
+  Toys_and_Games = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dtoys-and-games-intl-ship&field-keywords=&crid=17DE3O4GROMUT&sprefix=%2Ctoys-and-games-intl-ship%2C382",
+  Baby = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dbaby-products-intl-ship&field-keywords=&crid=3E4FRJD7G2VJW&sprefix=%2Cbaby-products-intl-ship%2C347",
+  Luggage = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dluggage-intl-ship&field-keywords=&crid=6RHDAYK51SOH&sprefix=%2Cluggage-intl-ship%2C311"
+)
+
+session <- bow("https://www.amazon.com/", user_agent = "Educational")
+category_df <- data.frame(
+  URL = unlist(categories),
+  Category = names(categories),
+  stringsAsFactors = FALSE
+)
+
+print(category_df)
+
+
+products <- lapply(category_df$URL, amazon_products)
+names(products) <- category_df$Category
+
+
+
+reviews_scrape <- function(url) {
+  page <- read_html(url)
+  
+  review_links <- page %>%
+    html_nodes("a.a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal") %>%
+    html_attr("href") %>%
+    unique() %>%
+    paste0("https://www.amazon.com", .)
+  
+  data.frame(
+    review_links = review_links
+  )
+}
+
+review_links_df <- lapply(category_df$URL, reviews_scrape)
+
+
+reviews_text <- function(urls) {
+  
+  results <- data.frame(
+    Reviews = character(length(urls)),  
+    stringsAsFactors = FALSE
+  )
+  
+  for (i in seq_along(urls)) {
+    if (!is.na(urls[i])) {
+      page <- read_html(urls[i])
+      reviews_data <- page %>%
+        html_nodes("p.a-spacing-small") %>%
+        .[1] %>%
+        html_text()
+
+      results$Reviews[i] <- if (length(reviews_data) > 0) reviews_data else NA
+    }
+  }
+  
+  return(results)
+}
+
+
+
+electronucs_reviews <- reviews_text(review_links_df[[1]]$review_links)
+books_reviews <- reviews_text(review_links_df[[2]]$review_links)
+toys_reviews <- reviews_text(review_links_df[[3]]$review_links)
+baby_reviews <- reviews_text(review_links_df[[4]]$review_links)
+luggage_reviews <- reviews_text(review_links_df[[5]]$review_links)
+
+
+electronics_category <- cbind(products[["Electronics"]], electronics_reviews)
+books_category <- cbind(products[["Books"]], laptop_reviews)
+toys_category <- cbind(products[["Toys"]], accessories_reviews)
+baby_category <- cbind(products[["Baby"]], sports_reviews)
+luggage_category <- cbind(products[["Luggage"]], luggage_reviews)
+
+electronics_category
+books_category
+toys_category
+baby_category
+luggage_category
+
+
+```
+```{r}
+# 6. Describe the data you have extracted.
+  # The extracted data consists of information from the five categories that were selected from Amazon. These categories include Electronics, Books, Toys and Games, Baby, and Luggage. For each category, 30 products were selected, resulting in a total of 150 products with details including price, description, ratings, and reviews for each product
+```
+```{r}
+# 7. What will be your use case for the data you have extracted?
+  # The data extracted from Amazon can be used to analyze the pricing, ratings, and reviews of products in different categories. This information can be used to compare products within each category, identify trends, and make informed purchasing decisions. Additionally, the data can be used for market research, competitive analysis, and product recommendations.
+
+```
+```{r}
+#8. Create graphs regarding the use case. And briefly explain it.
+library(ggplot2)
+library(dplyr)
+
+
+df_combined <- rbind(
+  cbind(electronics_category, Product_Name = electronics_category$Description, Category = "Electronics"),
+  cbind(books_category, Product_Name = books_category$Description, Category = "Books"),
+  cbind(toys_category, Product_Name = toys_category$Description, Category = "Toys and Games"),
+  cbind(baby_category, Product_Name = baby_category$Description, Category = "Baby"),
+  cbind(luggage_category, Product_Name = luggage_category$Description, Category = "Luggage")
+)
+
+
+df_combined$Price <- as.numeric(as.character(df_combined$Price))
+df_combined$Ratings <- as.numeric(as.character(df_combined$Ratings))
+df_combined <- df_combined %>%
+  mutate(rating_to_price_ratio = Ratings / Price)
+
+
+df_combined <- df_combined[!is.na(df_combined$rating_to_price_ratio), ]
+
+
+categories <- unique(df_combined$Category)
+
+
+par(mfrow = c(ceiling(length(categories) / 2), 2))
+
+
+for (category in categories) {
+  category_products <- df_combined %>% filter(Category == category)
+  
+  
+  short_name <- sapply(category_products$Product_Name, function(x) {
+    paste(strsplit(x, " ")[[1]][1:2], collapse = " ")
+  })
+  
+  
+  ylim <- range(category_products$rating_to_price_ratio, na.rm = TRUE)
+  
+  
+  barplot(
+    category_products$rating_to_price_ratio,
+    names.arg = short_name,
+    main = paste("Rating to Price Ratio for", category),
+    ylab = "Rating to Price Ratio",
+    col = rainbow(nrow(category_products)),
+    las = 2,
+    cex.names = 0.5,
+    ylim = ylim
+  )
+}
+
+
+
+```
+```{r}
+#9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2 package.
+library(ggplot2)
+library(dplyr)
+
+df_combined <- rbind(
+  cbind(electronics_category, Product_Name = electronics_category$Description, Category = "Electronics"),
+  cbind(books_category, Product_Name = books_category$Description, Category = "Books"),
+  cbind(toys_category, Product_Name = toys_category$Description, Category = "Toys and Games"),
+  cbind(baby_category, Product_Name = baby_category$Description, Category = "Baby"),
+  cbind(luggage_category, Product_Name = luggage_category$Description, Category = "Luggage")
+)
+
+df_combined$Price <- as.numeric(as.character(df_combined$Price))
+df_combined$Ratings <- as.numeric(as.character(df_combined$Ratings))
+
+ggplot(df_combined, aes(x = Price, y = Ratings, color = Category)) +
+  geom_point() +
+  labs(title = "Price vs Ratings for Amazon Products",
+       x = "Price",
+       y = "Ratings") +
+  theme_minimal()
+
+```
+```{r}
+#10. Rank the products of each category by price and ratings. Explain briefly. 
+# Electronics
+electronics_ranked <- electronics_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+# Books
+books_ranked <- books_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+# Toys and Games
+toys_ranked <- toys_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+# Baby Products
+baby_ranked <- baby_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+# Luggage
+luggage_ranked <- luggage_category %>%
+  mutate(
+    Rank_by_Price = rank(Price, ties.method = "min"),
+    Rank_by_Rating = rank(-Ratings, ties.method = "min")
+  ) %>%
+  arrange(Rank_by_Price, Rank_by_Rating)
+
+print(electronics_ranked)
+print(books_ranked)
+print(toys_ranked)
+print(baby_ranked)
+print(luggage_ranked)
+#The data frames present products categorized by type, displaying each product’s name and description along with its rank based on price (lower prices receive higher ranks) and rating (higher ratings receive higher ranks). In cases where there are ties, the higher rank is given precedence.
+```
+
+
+
+
 
