@@ -2,7 +2,9 @@
 title: "Sentiment Analysis"
 author: "Barrientos, Delfin, Infiesto"
 date: "2024-11-28"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
