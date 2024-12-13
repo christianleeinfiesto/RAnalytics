@@ -1,0 +1,875 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  11pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={RWorksheet\#5B},
+  pdfauthor={Barrientos, Delfin, Infiesto},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{RWorksheet\#5B}
+\author{Barrientos, Delfin, Infiesto}
+\date{2024-11-20}
+
+\begin{document}
+\maketitle
+
+Amazon Reviews Refrigerator
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rvest)}
+\FunctionTok{library}\NormalTok{(httr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(polite)}
+
+\NormalTok{urls }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}
+  \StringTok{"https://www.amazon.com/Silonn{-}Countertop{-}Portable{-}Machine{-}Self{-}Cleaning/dp/B0BXXKFJK2"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/EUHOMY{-}Countertop{-}Machine{-}Auto{-}Cleaning{-}Portable/dp/B0BWHZJHPL"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/Silonn{-}Countertop{-}Portable{-}Self{-}cleaning{-}Bullet{-}shaped/dp/B08ZYJ8CRX"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/EUHOMY{-}Countertop{-}Portable{-}Machine{-}Auto{-}Cleaning/dp/B0D3GV1VQS"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/Countertop{-}Chewable{-}35{-}5Lbs{-}Machine{-}Self{-}Cleaning/dp/B0DBHN7WSN"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/EUHOMY{-}Countertop{-}Removable{-}Auto{-}Cleaning{-}Portable/dp/B0C32SGKMJ"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/Upstreman{-}Adjustable{-}Thermostat{-}Refrigerator{-}Black{-}BR321/dp/B09RWFZTWW"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/Silonn{-}Countertop{-}One{-}Click{-}Operation{-}Self{-}Cleaning/dp/B0CD2C8M4D"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/ecozy{-}Portable{-}Countertop{-}Self{-}Cleaning{-}Standing/dp/B0B498C643"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/Countertop{-}Silonn{-}Chewable{-}Self{-}Cleaning{-}Function/dp/B0C9SWH3RC"}
+\NormalTok{)}
+\CommentTok{\#This is function from GPT, and I understand its function is to make the website think that the request is coming from a browser not from the bot. }
+\NormalTok{headers }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{add\_headers}\NormalTok{(}
+  \StringTok{\textasciigrave{}}\AttributeTok{User{-}Agent}\StringTok{\textasciigrave{}} \OtherTok{=} \StringTok{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+\NormalTok{)}
+\NormalTok{scrape\_reviews }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(url) \{}
+  
+\NormalTok{  webpage }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{GET}\NormalTok{(url, headers) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{read\_html}\NormalTok{()}
+
+  
+\NormalTok{  product\_name }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"\#productTitle"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_reviewers }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"span.a{-}profile{-}name"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_date }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}date"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_individual\_rating }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".a{-}icon{-}alt"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_text\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}text{-}content span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_title\_of\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}title span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}data span.a{-}size{-}mini.a{-}color{-}state.a{-}text{-}bold"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(verified\_purchase }\SpecialCharTok{==} \StringTok{"Verified Purchase"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{, }\StringTok{"No"}\NormalTok{)}
+  
+  
+\NormalTok{  min\_length }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}
+    \FunctionTok{length}\NormalTok{(product\_reviewers),}
+    \FunctionTok{length}\NormalTok{(product\_date),}
+    \FunctionTok{length}\NormalTok{(product\_individual\_rating),}
+    \FunctionTok{length}\NormalTok{(product\_text\_review),}
+    \FunctionTok{length}\NormalTok{(product\_title\_of\_review),}
+    \FunctionTok{length}\NormalTok{(verified\_purchase)}
+\NormalTok{  )}
+  
+  
+  \ControlFlowTok{if}\NormalTok{ (min\_length }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+    \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{Product\_Name =}\NormalTok{ product\_name[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Reviewers =}\NormalTok{ product\_reviewers[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Date =}\NormalTok{ product\_date[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Individual\_Rating =}\NormalTok{ product\_individual\_rating[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Text\_Review =}\NormalTok{ product\_text\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Title\_of\_Review =}\NormalTok{ product\_title\_of\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Verified\_Purchase =}\NormalTok{ verified\_purchase[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{stringsAsFactors =} \ConstantTok{FALSE}
+\NormalTok{    )[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{min}\NormalTok{(}\DecValTok{20}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(data.frame)), ])}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \ConstantTok{NULL}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+
+\ControlFlowTok{for}\NormalTok{ (url }\ControlFlowTok{in}\NormalTok{ urls) \{}
+\NormalTok{  product\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{scrape\_reviews}\NormalTok{(url)}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(product\_reviews)) \{}
+\NormalTok{    all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{append}\NormalTok{(all\_reviews, }\FunctionTok{list}\NormalTok{(product\_reviews))}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \FunctionTok{cat}\NormalTok{(}\StringTok{"Failed to scrape URL:"}\NormalTok{, url, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{final\_reviews\_in\_Refrigerator }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(all\_reviews)}
+
+
+\FunctionTok{View}\NormalTok{(final\_reviews\_in\_Refrigerator)}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{head}\NormalTok{(final\_reviews\_in\_Refrigerator))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                                                                                                                                                                          Product_Name
+## 1...1    Silonn Ice Maker Countertop, Portable Ice Machine with Carry Handle, Self-Cleaning Ice Makers with Basket and Scoop, 9 Cubes in 6 Mins, 26 lbs per Day, Ideal for Home, Kitchen, Camping, RV
+## NA...2                                                                                                                                                                                           <NA>
+## NA.1...3                                                                                                                                                                                         <NA>
+## NA.2...4                                                                                                                                                                                         <NA>
+## NA.3...5                                                                                                                                                                                         <NA>
+## NA.4...6                                                                                                                                                                                         <NA>
+##                 Reviewers                               Date  Individual_Rating
+## 1...1    silonn ice maker Reviewed in Mexico on May 10, 2024 4.4 out of 5 stars
+## NA...2               <NA>                               <NA>               <NA>
+## NA.1...3             <NA>                               <NA>               <NA>
+## NA.2...4             <NA>                               <NA>               <NA>
+## NA.3...5             <NA>                               <NA>               <NA>
+## NA.4...6             <NA>                               <NA>               <NA>
+##                                                                                             Text_Review
+## 1...1    Muy buena máquina, cumplió mis espectativas, cómoda y fácil de manejar, el precio súper bien!!
+## NA...2                                                                                             <NA>
+## NA.1...3                                                                                           <NA>
+## NA.2...4                                                                                           <NA>
+## NA.3...5                                                                                           <NA>
+## NA.4...6                                                                                           <NA>
+##            Title_of_Review Verified_Purchase
+## 1...1    Excelente maquina               Yes
+## NA...2                <NA>              <NA>
+## NA.1...3              <NA>              <NA>
+## NA.2...4              <NA>              <NA>
+## NA.3...5              <NA>              <NA>
+## NA.4...6              <NA>              <NA>
+\end{verbatim}
+
+Televisions
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rvest)}
+\FunctionTok{library}\NormalTok{(httr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(polite)}
+
+\NormalTok{urls }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"https://www.amazon.com/tcl{-}fire{-}tv{-}55{-}inch{-}class{-}s5{-}4k{-}smart{-}tv/dp/B0D4PD799H"}\NormalTok{, }\StringTok{"https://www.amazon.com/amazon{-}fire{-}tv{-}32{-}inch{-}2{-}series{-}hd{-}smart{-}tv/dp/B0CJDSNN4T"}\NormalTok{, }\StringTok{"https://www.amazon.com/amazon{-}fire{-}tv{-}50{-}inch{-}4{-}series{-}4k{-}smart{-}tv/dp/B0CZBLZYY5"}\NormalTok{, }\StringTok{"https://www.amazon.com/amazon{-}fire{-}tv{-}50{-}inch{-}4{-}series{-}4k{-}smart{-}tv/dp/B0CZBLZYY5"}\NormalTok{,}\StringTok{"https://www.amazon.com/tcl{-}fire{-}tv{-}55{-}inch{-}class{-}q65{-}qled{-}smart{-}tv/dp/B0D4NWLQN3"}\NormalTok{, }\StringTok{"https://www.amazon.com/tcl{-}fire{-}tv{-}55{-}inch{-}class{-}q65{-}qled{-}smart{-}tv/dp/B0D4NWLQN3"}\NormalTok{, }\StringTok{"https://www.amazon.com/tcl{-}fire{-}tv{-}55{-}inch{-}class{-}q65{-}qled{-}smart{-}tv/dp/B0D4NWLQN3"}\NormalTok{, }\StringTok{"https://www.amazon.com/amazon{-}fire{-}tv{-}50{-}inch{-}4{-}series{-}4k{-}smart{-}tv/dp/B0CZBLZYY5"}\NormalTok{, }\StringTok{"https://www.amazon.com/amazon{-}fire{-}tv{-}55{-}inch{-}4{-}series{-}4k{-}smart{-}tv/dp/B0CZBS9GKV"}\NormalTok{,}\StringTok{"https://www.amazon.com/Hisense{-}65{-}Inch{-}Class{-}Google{-}65QD7N/dp/B0D5Y36ZKL"}
+\NormalTok{          )}
+
+\NormalTok{headers }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{add\_headers}\NormalTok{(}
+  \StringTok{\textasciigrave{}}\AttributeTok{User{-}Agent}\StringTok{\textasciigrave{}} \OtherTok{=} \StringTok{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+\NormalTok{)}
+\NormalTok{scrape\_reviews }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(url) \{}
+  
+\NormalTok{  webpage }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{GET}\NormalTok{(url, headers) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{read\_html}\NormalTok{()}
+
+  
+\NormalTok{  product\_name }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"\#productTitle"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_reviewers }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"span.a{-}profile{-}name"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_date }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}date"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_individual\_rating }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".a{-}icon{-}alt"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_text\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}text{-}content span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_title\_of\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}title span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}data span.a{-}size{-}mini.a{-}color{-}state.a{-}text{-}bold"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(verified\_purchase }\SpecialCharTok{==} \StringTok{"Verified Purchase"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{, }\StringTok{"No"}\NormalTok{)}
+  
+  
+\NormalTok{  min\_length }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}
+    \FunctionTok{length}\NormalTok{(product\_reviewers),}
+    \FunctionTok{length}\NormalTok{(product\_date),}
+    \FunctionTok{length}\NormalTok{(product\_individual\_rating),}
+    \FunctionTok{length}\NormalTok{(product\_text\_review),}
+    \FunctionTok{length}\NormalTok{(product\_title\_of\_review),}
+    \FunctionTok{length}\NormalTok{(verified\_purchase)}
+\NormalTok{  )}
+  
+  
+  \ControlFlowTok{if}\NormalTok{ (min\_length }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+   \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{Product\_Name =}\NormalTok{ product\_name[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Reviewers =}\NormalTok{ product\_reviewers[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Date =}\NormalTok{ product\_date[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Individual\_Rating =}\NormalTok{ product\_individual\_rating[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Text\_Review =}\NormalTok{ product\_text\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Title\_of\_Review =}\NormalTok{ product\_title\_of\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Verified\_Purchase =}\NormalTok{ verified\_purchase[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{stringsAsFactors =} \ConstantTok{FALSE}
+\NormalTok{    )[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{min}\NormalTok{(}\DecValTok{20}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(data.frame)), ])}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \ConstantTok{NULL}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+
+\ControlFlowTok{for}\NormalTok{ (url }\ControlFlowTok{in}\NormalTok{ urls) \{}
+\NormalTok{  product\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{scrape\_reviews}\NormalTok{(url)}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(product\_reviews)) \{}
+\NormalTok{    all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{append}\NormalTok{(all\_reviews, }\FunctionTok{list}\NormalTok{(product\_reviews))}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \FunctionTok{cat}\NormalTok{(}\StringTok{"Failed to scrape URL:"}\NormalTok{, url, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{final\_reviews\_in\_TV }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(all\_reviews)}
+
+
+\FunctionTok{View}\NormalTok{(final\_reviews\_in\_TV)}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{head}\NormalTok{(final\_reviews\_in\_TV))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                                                                                                                                                                                  Product_Name
+## 1...1 TCL 55-Inch Class S5 UHD 4K LED Smart TV with Fire TV (55S551F, 2024 Model), Dolby Vision, HDR PRO+, Dolby Atmos, Alexa Built-in with Voice Remote, Apple AirPlay 2 Compatibility, Streaming Television
+## 2...2                                                                                                                                                                                                        
+## 3...3                                                                                                                                                                                                    <NA>
+## 4...4                                                                                                                                                                                                    <NA>
+## 5...5                                                                                                                                                                                                    <NA>
+## 6...6                                                                                                                                                                                                    <NA>
+##                             Reviewers
+## 1...1 Watch to hear my honest review!
+## 2...2                                
+## 3...3                                
+## 4...4                                
+## 5...5                                
+## 6...6                                
+##                                                     Date
+## 1...1 Reviewed in the United States on November 14, 2024
+## 2...2  Reviewed in the United States on October 24, 2024
+## 3...3 Reviewed in the United States on November 16, 2024
+## 4...4  Reviewed in the United States on October 27, 2024
+## 5...5  Reviewed in the United States on November 5, 2024
+## 6...6 Reviewed in the United States on November 20, 2024
+##                                 Individual_Rating
+## 1...1                          4.0 out of 5 stars
+## 2...2                               Previous page
+## 3...3                                   Next page
+## 4...4                          4.1 out of 5 stars
+## 5...5 Previous page of related Sponsored Products
+## 6...6     Next page of related Sponsored Products
+##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Text_Review
+## 1...1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             The picture quality is exceptionally clear. It took some time to set everything up, but it works wonderfully. I appreciate having a hard-wired ethernet port, and I might run an ethernet line in the future. I still can't believe how sharp the picture is; the photo doesn't capture its full quality. There is no lag between apps at all, unlike some others who mentioned experiencing lag. I suspect their lag was due to their internet speed. I’m using AT&T fiber with a 1GB speed, and my Wi-Fi typically measures around 400 Mbps. The remote control is oddly shaped; it resembles a long, skinny nightstick. Overall, this product is a great value for the price.
+## 2...2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           I have always bought Samsung but wanted to try and save some money and decided on this TCL 75 in.I am not disappointed, the tv is lightweight for it's size and set up was easy.The picture quality is very good and so is the sound, it has 2 speakers at the bottom and I don't need to use my sound bar for normal daily viewing. The remote also works well and is easy to use, there is a slight delay sometimes but that doesn't bother me. There are video and audio adjustments so you can fine tune it to your specific taste. I bought this on sale for just over $500 and I am very satisfied, I didn't want to spend over a thousand dollars for a big name brand, so if you want to save alot consider this brand tv.
+## 3...3 The Color is fantastic and the picture is pretty great as far as backlight, brightness, and sharpness. It seemed smaller than my last TCL 55" but I measured it and it was the same size. I'm still trying to get used to the Home page layout of the Fire OS - I prefer Roku. 3 things that bothered me about this T.V.: 1.) I'm disappointed that the 3.5 mm headphone jack will not output to my multimedia speakers (with subwoofer), like my last TCL. I did all the proper settings and no sound at all. Luckily, the onboard TV speaker sound is better than most TV's if you tweak the settings a bit. It's good enough that I didn't feel compelled to buy a sound bar immediately (may get one eventually).2.) Like other reviews mentioned, there is a lag sometimes. It's just enough to be annoying but nothing to pull your hair out over...so far. I will update if anything gets worse with time.3) This is my worst pet peeve about this TV - I hate the remote! It's too long, overly sensitive (easy to trigger), and not very efficient with the button layout imo. But I have small hands so maybe that's why. Having Alexa makes up for some of my dislikes.All in all, this is an excellent TV for the price and a great deal. I like that it has a Media Player (app) so I can see stuff from a thumb drive right on my T.V. Lets see how long it lasts. The T.V. that I was replacing, a 55" TCL 5 series with Roku, the video went out 4 months after the 4 year extended warranty expired. Good thing I didn't pay for the extended warranty lol.
+## 4...4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          The tv is decent but not great or amazing. The response to the remote buttons is a bit laggy. The picture is pretty decent but unless you change the settings the backlight seems to auto adjust a lot with different scenes and that can get a bit annoying. Sounds pretty decent. All in all not a bad tv but not a great tv either. We got it because our old tv crapped out in us and had to get one quickly for foot ball. So for the price wasn’t a bad deal but I wish I spent the money n got a better one.
+## 5...5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                I love the size, it was bigger than I imagined and very thin.  It is awesome for a wall mount, even though I did not mount it.  It is thin and light enough to do with ease.  I can say the volume isn't the loudest, but I have Bluetooth, so no worries (I need volume...kids...lol).  I may order surround sound for music and movie nights.  The T.V. alone surpassed what I expected for the price.  Pairing was easy (I already had a Fire Stick) and it took less than 5 mins.  Happy shopping!  I am very pleased with this purchase.
+## 6...6                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               I love this TV with Firetv!  Picture is great and the sounds is awesome!  I can’t complain, the price awesome!
+##          Title_of_Review Verified_Purchase
+## 1...1 5.0 out of 5 stars               Yes
+## 2...2                                  Yes
+## 3...3     So far so good               Yes
+## 4...4 5.0 out of 5 stars               Yes
+## 5...5                                  Yes
+## 6...6           Great TV               Yes
+\end{verbatim}
+
+Freezers
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rvest)}
+\FunctionTok{library}\NormalTok{(httr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(polite)}
+
+\NormalTok{urls }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"https://www.amazon.com/Electactic{-}Adjustable{-}Thermostat{-}Removable{-}Reversible/dp/B0DG2J2MDT"}\NormalTok{,}\StringTok{"https://www.amazon.com/Midea{-}MRC04M3AWW{-}White{-}Freezer{-}Cubic/dp/B00MVVITWC"}\NormalTok{,}
+          \StringTok{"https://www.amazon.com/Midea{-}MRC04M3AWW{-}White{-}Freezer{-}Cubic/dp/B00MVVITWC"}\NormalTok{, }
+          \StringTok{"https://www.amazon.com/BANGSON{-}Upright{-}Convertible{-}Refrigerator{-}Apartment/dp/B0DBL42KGZ"}\NormalTok{,}
+          \StringTok{"https://www.amazon.com/West{-}Bend{-}WB0500CFMW{-}Temperature{-}Free{-}Standing/dp/B0C1PCTG9T"}\NormalTok{, }\StringTok{"https://www.amazon.com/West{-}Bend{-}WB0500CFMW{-}Temperature{-}Free{-}Standing/dp/B0C1PCTG9T"}\NormalTok{,}\StringTok{"https://www.amazon.com/Midea{-}MRC04M3AWW{-}White{-}Freezer{-}Cubic/dp/B00MVVITWC"}\NormalTok{, }\StringTok{"https://www.amazon.com/Midea{-}MRC04M3AWW{-}White{-}Freezer{-}Cubic/dp/B00MVVITWC"}\NormalTok{, }\StringTok{"https://www.amazon.com/Midea{-}MRC04M3AWW{-}White{-}Freezer{-}Cubic/dp/B00MVVITWC"}\NormalTok{, }\StringTok{"https://www.amazon.com/midea{-}MRU030S2ARBB{-}Upright{-}Freezer{-}Large/dp/B07QKNP318"}\NormalTok{)}
+
+\NormalTok{headers }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{add\_headers}\NormalTok{(}
+  \StringTok{\textasciigrave{}}\AttributeTok{User{-}Agent}\StringTok{\textasciigrave{}} \OtherTok{=} \StringTok{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+\NormalTok{)}
+\NormalTok{scrape\_reviews }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(url) \{}
+  
+\NormalTok{  webpage }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{GET}\NormalTok{(url, headers) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{read\_html}\NormalTok{()}
+
+  
+\NormalTok{  product\_name }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"\#productTitle"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_reviewers }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"span.a{-}profile{-}name"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_date }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}date"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_individual\_rating }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".a{-}icon{-}alt"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_text\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}text{-}content span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  product\_title\_of\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}title span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}data span.a{-}size{-}mini.a{-}color{-}state.a{-}text{-}bold"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(verified\_purchase }\SpecialCharTok{==} \StringTok{"Verified Purchase"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{, }\StringTok{"No"}\NormalTok{)}
+  
+  
+\NormalTok{  min\_length }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}
+    \FunctionTok{length}\NormalTok{(product\_reviewers),}
+    \FunctionTok{length}\NormalTok{(product\_date),}
+    \FunctionTok{length}\NormalTok{(product\_individual\_rating),}
+    \FunctionTok{length}\NormalTok{(product\_text\_review),}
+    \FunctionTok{length}\NormalTok{(product\_title\_of\_review),}
+    \FunctionTok{length}\NormalTok{(verified\_purchase)}
+\NormalTok{  )}
+  
+  
+  \ControlFlowTok{if}\NormalTok{ (min\_length }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+    \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{Product\_Name =}\NormalTok{ product\_name[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Reviewers =}\NormalTok{ product\_reviewers[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Date =}\NormalTok{ product\_date[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Individual\_Rating =}\NormalTok{ product\_individual\_rating[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Text\_Review =}\NormalTok{ product\_text\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Title\_of\_Review =}\NormalTok{ product\_title\_of\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Verified\_Purchase =}\NormalTok{ verified\_purchase[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{stringsAsFactors =} \ConstantTok{FALSE}
+\NormalTok{    )[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{min}\NormalTok{(}\DecValTok{20}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(data.frame)), ])}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \ConstantTok{NULL}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+
+\ControlFlowTok{for}\NormalTok{ (url }\ControlFlowTok{in}\NormalTok{ urls) \{}
+\NormalTok{  product\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{scrape\_reviews}\NormalTok{(url)}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(product\_reviews)) \{}
+\NormalTok{    all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{append}\NormalTok{(all\_reviews, }\FunctionTok{list}\NormalTok{(product\_reviews))}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \FunctionTok{cat}\NormalTok{(}\StringTok{"Failed to scrape URL:"}\NormalTok{, url, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{final\_reviews\_in\_Freezers }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(all\_reviews)}
+
+
+\FunctionTok{View}\NormalTok{(final\_reviews\_in\_Freezers)}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{head}\NormalTok{(final\_reviews\_in\_Freezers))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                                                                                                                                                  Product_Name
+## 1...1 3.0 Cu.ft Upright Freezer, Small Mini Freezer with Adjustable Thermostat, Removable Shelves, Reversible Single Door, for Bedroom/Home/Dorms/Apartment (Stainless Steel)
+## 2...2                                                                                                                                                                        
+## 3...3                                                                                                                                                                    <NA>
+## 4...4                                                                                                                                                                    <NA>
+## 5...5                                                                                                                                                                    <NA>
+## 6...6                                                                                                                                                                    <NA>
+##             Reviewers                                               Date
+## 1...1 Amazon Customer Reviewed in the United States on February 27, 2024
+## 2...2 Amazon Customer Reviewed in the United States on November 19, 2024
+## 3...3  Shirley Vatter  Reviewed in the United States on October 21, 2021
+## 4...4      Roberto C. Reviewed in the United States on November 20, 2024
+## 5...5      David Rowe  Reviewed in the United States on October 24, 2023
+## 6...6  Carlene Morris      Reviewed in the United States on May 17, 2023
+##                                 Individual_Rating
+## 1...1                          4.5 out of 5 stars
+## 2...2 Previous page of related Sponsored Products
+## 3...3     Next page of related Sponsored Products
+## 4...4                          4.5 out of 5 stars
+## 5...5 Previous page of related Sponsored Products
+## 6...6     Next page of related Sponsored Products
+##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Text_Review
+## 1...1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   This is the perfect size for where I needed it to be placed in my garage. My eyesight is not great but I did manage to get the temperature dial to the correct number.  Everything is working as it should.  I do plan to put this on a table or stand so it is easier for me to use.  This also arrived before the delivery date much to my surprise and delight!
+## 2...2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          The design of temperature control should be higher that currently is. Has to bend over to be reached. Otherwise, very good freezer. Great design and good looking equipment
+## 3...3 There is a reason this compact freezer is several pounds lighter than most and less expensive too. It's the insulation. This one is light and costs less because it must be less well insulated than the competition. Because it runs ALL THE TIME. Literally. All. The. Time. And it's obvious how often it turns on because it makes a very audible BLONK when it clicks itself off. And you will be absolutely amazed how frequently you hear that sound throughout the day and night.That being said, it's attractive and works well. It didn't take long to cool to an adequate freezing temp right out of the box and my frozen items remained frozen from the moment I put them in it.The closed door seems to have a good seal to it and I don't get into it very often. So these aren't the reasons it runs constantly.I have the 3.0 cu ft version and it is quite large. So measure your space carefully before ordering it. I got the stainless steel version and that affects only the door. The rest of the unit is black, exactly like my full sized refrigerator and stove.And that "blonk" noise it makes (mentioned above) - do keep that in mind if it's located anywhere near your bed. It's quite possibly loud enough to wake you up (about every 15 minutes) until you get used to it. I hear it clearly from the upstairs bedroom with it positioned downstairs in the kitchen. But it's not loud enough at that distance to actually wake me up from sleep.
+## 4...4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    I dislike because it is a manual defrost. I liked everything else about it, but that was my fault. I didn’t read everything correctly.  Good value for the money.
+## 5...5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        The size is perfect for our use. We installed it in the storage area of a 5th wheel camper. It is light weight and quiet. There are 7 temp settings. We have it set on 2, so there are 5 colder settings. Stays at 5 degrees.
+## 6...6                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          We have a side-by-side refrigerator with a large freezer. Never mind how large the freezer compartment, it's always filled with frozen fruits, veggies and gluten free bread which I buy in excess to make sure I won't go without it.  We didn't have much room for a freezer so it had to go under a table. As the 3.0 was too tall I chose this 2.1 that fits perfectly and even looks great. I am keeping a bunch of stuff in it, much more than I had thought. I set the temperature to 5 1/2 and it's doing a great job. I am glad it was available in black, my favorite color that also matches our black dishwasher. Very pleased.
+##                        Title_of_Review Verified_Purchase
+## 1...1               5.0 out of 5 stars               Yes
+## 2...2                                                Yes
+## 3...3         Perfect for my needs now               Yes
+## 4...4               5.0 out of 5 stars               Yes
+## 5...5                                                Yes
+## 6...6 Electactic 3 cf. upright freezer               Yes
+\end{verbatim}
+
+Make-up
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rvest)}
+\FunctionTok{library}\NormalTok{(httr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(polite)}
+
+\NormalTok{urls }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}
+  \StringTok{"https://www.amazon.com/Peripera{-}Ink{-}Velvet{-}Lip{-}Tint/dp/B08XWHJLT6"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/ColorStay{-}Stocking{-}Stuffers{-}Medium{-}Full{-}Coverage/dp/B004X8M59E"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/Foundation{-}Coverage{-}Concealer{-}Flawless{-}Control/dp/B07W19Q5CK"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/Teenagers{-}Eyeshadow{-}Foundation{-}Concealer{-}Lipgloss/dp/B0CCS563S6"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/l{-}f{-}Reviver{-}Nourishing{-}High{-}shine{-}Cruelty{-}free/dp/B0CMJZ8G6Y"}\NormalTok{,}
+  \StringTok{"https://www.amazon.com/Liquid{-}Lipstick{-}Long{-}Lasting{-}Non{-}Stick{-}Waterproof/dp/B083QNQQP9"}\NormalTok{,}\StringTok{"https://www.amazon.com/Paris{-}Makeup{-}True{-}Natural{-}Glow{-}Illuminator{-}Highlighter{-}Day{-}Radiant{-}Glow/dp/B074PTZCNX"}\NormalTok{, }\StringTok{"https://www.amazon.com/Your{-}Skin{-}BetterTM{-}Cream{-}Light/dp/B00RZ4R0ZM/ref=sr\_1\_24"}\NormalTok{, }\StringTok{"https://www.amazon.com/Your{-}Skin{-}BetterTM{-}Cream{-}Light/dp/B00RZ4R0ZM/ref=sr\_1\_24"}\NormalTok{, }\StringTok{"https://www.amazon.com/NYX{-}PROFESSIONAL{-}MAKEUP{-}Waterproof{-}Eyeliner/dp/B074Y8LM6T"}
+\NormalTok{)}
+
+
+\NormalTok{headers }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{add\_headers}\NormalTok{(}
+  \StringTok{\textasciigrave{}}\AttributeTok{User{-}Agent}\StringTok{\textasciigrave{}} \OtherTok{=} \StringTok{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+\NormalTok{)}
+
+
+\NormalTok{scrape\_reviews }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(url) \{}
+  
+\NormalTok{  webpage }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{GET}\NormalTok{(url, headers) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{read\_html}\NormalTok{()}
+
+\NormalTok{  product\_name }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"\#productTitle"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_reviewers }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"span.a{-}profile{-}name"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_date }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}date"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_individual\_rating }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".a{-}icon{-}alt"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_text\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}text{-}content span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_title\_of\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}title span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}data span.a{-}size{-}mini.a{-}color{-}state.a{-}text{-}bold"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(verified\_purchase }\SpecialCharTok{==} \StringTok{"Verified Purchase"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{, }\StringTok{"No"}\NormalTok{)}
+  
+\NormalTok{  min\_length }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}
+    \FunctionTok{length}\NormalTok{(product\_reviewers),}
+    \FunctionTok{length}\NormalTok{(product\_date),}
+    \FunctionTok{length}\NormalTok{(product\_individual\_rating),}
+    \FunctionTok{length}\NormalTok{(product\_text\_review),}
+    \FunctionTok{length}\NormalTok{(product\_title\_of\_review),}
+    \FunctionTok{length}\NormalTok{(verified\_purchase)}
+\NormalTok{  )}
+  
+  \ControlFlowTok{if}\NormalTok{ (min\_length }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+    \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{Product\_Name =}\NormalTok{ product\_name[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Reviewers =}\NormalTok{ product\_reviewers[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Date =}\NormalTok{ product\_date[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Individual\_Rating =}\NormalTok{ product\_individual\_rating[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Text\_Review =}\NormalTok{ product\_text\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Title\_of\_Review =}\NormalTok{ product\_title\_of\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Verified\_Purchase =}\NormalTok{ verified\_purchase[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{stringsAsFactors =} \ConstantTok{FALSE}
+\NormalTok{    )[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{min}\NormalTok{(}\DecValTok{20}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(data.frame)), ])}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \ConstantTok{NULL}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (url }\ControlFlowTok{in}\NormalTok{ urls) \{}
+\NormalTok{  product\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{scrape\_reviews}\NormalTok{(url)}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(product\_reviews)) \{}
+\NormalTok{    all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{append}\NormalTok{(all\_reviews, }\FunctionTok{list}\NormalTok{(product\_reviews))}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \FunctionTok{cat}\NormalTok{(}\StringTok{"Failed to scrape URL:"}\NormalTok{, url, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{final\_reviews\_in\_MakeUp }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(all\_reviews)}
+
+
+\FunctionTok{View}\NormalTok{(final\_reviews\_in\_MakeUp)}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{head}\NormalTok{(final\_reviews\_in\_MakeUp))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                                                                                                                    Product_Name
+## 1...1 Peripera Ink the Velvet Lip Tint - High Pigment Color, Longwear, Weightless, Not Animal Tested, Gluten-Free, Paraben-Free (017 ROSY NUDE)
+## 2...2                                                                                                                                      <NA>
+## 3...3                                                                                                                                      <NA>
+## 4...4                                                                                                                                      <NA>
+## 5...5                                                                                                                                      <NA>
+## 6...6                                                                                                                                      <NA>
+##                     Reviewers
+## 1...1 Peripera Ink Velvet #17
+## 2...2                        
+## 3...3                        
+## 4...4                        
+## 5...5                        
+## 6...6                        
+##                                                     Date
+## 1...1  Reviewed in the United States on November 4, 2024
+## 2...2   Reviewed in the United States on October 3, 2024
+## 3...3 Reviewed in the United States on November 14, 2024
+## 4...4       Reviewed in the United States on May 8, 2023
+## 5...5 Reviewed in the United States on November 21, 2024
+## 6...6 Reviewed in the United States on November 23, 2024
+##                                 Individual_Rating
+## 1...1                          4.1 out of 5 stars
+## 2...2 Previous page of related Sponsored Products
+## 3...3     Next page of related Sponsored Products
+## 4...4                               Previous page
+## 5...5                                   Next page
+## 6...6                               Previous page
+##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         Text_Review
+## 1...1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Easily one of my favorite lip products of all time. Matte look but extremely thick and creamy. Stays put with or without liner, long lasting, and fades over time leaving a trace of color while the moisture remains.I’m 61 with lip scars, lines, and Ozempic face. I’m wearing this over foundation on lips, eyes and cheeks. Can’t wait to try a darker shade.
+## 2...2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     I've have tried a lot of lip tints, but this is my favorite that I always go back to. The texture feels smooth and velvet, has decent lasting power, and the colors are amazing. Other lip tints or stains I've tried either make my lips look weird when most of it rubs off, or don't last at all. The colors are also super flattering, I often have trouble finding colors that work with my olive skin tone. My favorites cinnamon nude and well-made nude. You can build up the color to make your lips fully opaque or just have a hint of color. I have to say though, sometimes the colors end up looking different than how they appear online, but overall I highly recommend!
+## 3...3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+## 4...4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                The media could not be loaded.
+## 5...5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                I got one lipstick as a present. It’s been my favorite ever since. I barely use makeup so I have everything for a while. This will no hydrate your lips since will dry out after a few minutes but won’t  give you a “dust” sensation like other matte lipsticks. Good enough for a nice stick sensation. For me it doesn’t smell bad or good. It gives you an awesome matte look and my favorite part is the shade it leaves behind after it dries outs. NOW HEAR ME OUT THIS WAS DISAPPOINTING FOR ME… I loved the original color I got it was perfect for my skin tone I ordered the exact same product and as soon as I opened the box I notice the bottle color was slightly different. In fact the color was slightly darker more brownish. I was going to buy many bottles but I’m glad I just ordered one. I will order a different tone but definitely it’s disappointing you won’t get the same color shade even if it is the same “tone code”. THE OLD BOTTLE HAS A WHITE STAIN IN THE CAP. THE PICTURES ARENT THE BEST BUT IN PERSON EVERYONE TOLD ME IT DEFINITELY LOOKS DARKER :/*** PLUS I DIDNT DEVELOPE AN ALLERGIC REACTION BUT THE NEW LIPSTICK GAVE ME A BURNING ITCHING FOR A FEW MINUTES
+## 6...6 I’ve been eyeing these lip tints for some time and now that I needed a particular color for a cosplay I decided to finally give them a try. I got Well-Made Nude and it’s exactly the color I was looking for - it’s kind of a pinky coral nude situation. Very flattering on, even given that I have cool undertones. And I absolutely love the texture/finish! It really does feel velvety and doesn’t feel drying like most matte liquid lip colors. It truly feels amazing on and you can forget you’re wearing a lip color once it dries down. However, it does not last and is not transfer-proof. It came off onto my cup every time I took a drink, and eating even a non-greasy meal totally wiped it all away. And I tried all the “right” things - exfoliate lips, wipe clean, lip primer, fill lips with lip liner, apply tint, and then press translucent setting powder on top. I think I’ll be looking for another product because I need staying power for a con. Too bad because I really do love it otherwise.For those complaining it doesn’t look as sheer/ombré as in the product photos: it depends on how you apply. If you put it on just like you would a normal liquid lipstick it will give a full coverage effect. If you want the gradient effect, here’s what you do (it’s easy and takes 20 seconds max, even though there are a few steps):1. Apply color only to the insides of your lips, closest to your mouth. Apply as much or as little color as you want, it’s buildable.2. Gently rub your lips together.3. To ensure a nicely blended gradient effect, use your pinky finger or a small blending brush to tap the place where your lip color meets your natural lips until it looks blended and blurred.4. Optional - for an even more dramatic gradient effect, take some concealer that matches your skin tone around your mouth, dab it onto your pinky finger or small blending brush, and gently tap onto the edges of your lips until blended seamlessly in with the lip tint.
+##            Title_of_Review Verified_Purchase
+## 1...1   5.0 out of 5 stars               Yes
+## 2...2                                    Yes
+## 3...3   Gorgeous Lip Cream               Yes
+## 4...4   5.0 out of 5 stars               Yes
+## 5...5                                    Yes
+## 6...6 My Favorite Lip Tint               Yes
+\end{verbatim}
+
+Phones
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rvest)}
+\FunctionTok{library}\NormalTok{(httr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(polite)}
+
+\NormalTok{urls }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"https://www.amazon.com/Moto{-}Play{-}Unlocked{-}Camera{-}Sapphire/dp/B0CP6DDN1H"}\NormalTok{, }\StringTok{"https://www.amazon.com/SAMSUNG{-}A35{-}Unlocked{-}Smartphone{-}Expandable/dp/B0CV4NQYFP"}\NormalTok{, }\StringTok{"https://www.amazon.com/Galaxy{-}S21{-}Ultra{-}5G{-}Smartphone/dp/B096T6Y623"}\NormalTok{, }\StringTok{"https://www.amazon.com/Samsung{-}Galaxy{-}S20{-}FE{-}128GB/dp/B08L34JQ9C"}\NormalTok{, }\StringTok{"https://www.amazon.com/Samsung{-}Unlocked{-}Smartphone{-}Expandable{-}Infinite/dp/B09SM24S8C"}\NormalTok{, }\StringTok{"https://www.amazon.com/Apple{-}iPhone{-}128GB{-}Pacific{-}Blue/dp/B08PMYLKVF"}\NormalTok{, }\StringTok{"https://www.amazon.com/Apple{-}iPhone{-}14{-}128GB{-}Midnight/dp/B0BN72FYFG"}\NormalTok{, }\StringTok{"https://www.amazon.com/SAMSUNG{-}Smartphone{-}Unlocked{-}Android{-}Titanium/dp/B0CMDMKQB7"}\NormalTok{, }\StringTok{"https://www.amazon.com/Google{-}Pixel{-}8a{-}Unlocked{-}Advanced/dp/B0CYQ916ZY"}\NormalTok{, }\StringTok{"https://www.amazon.com/Google{-}Pixel{-}8a{-}Unlocked{-}Advanced/dp/B0CYQ916ZY"}\NormalTok{)}
+
+\NormalTok{headers }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{add\_headers}\NormalTok{(}
+  \StringTok{\textasciigrave{}}\AttributeTok{User{-}Agent}\StringTok{\textasciigrave{}} \OtherTok{=} \StringTok{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+\NormalTok{)}
+
+
+\NormalTok{scrape\_reviews }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(url) \{}
+  
+\NormalTok{  webpage }\OtherTok{\textless{}{-}}\NormalTok{ httr}\SpecialCharTok{::}\FunctionTok{GET}\NormalTok{(url, headers) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{read\_html}\NormalTok{()}
+
+\NormalTok{  product\_name }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"\#productTitle"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_reviewers }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{"span.a{-}profile{-}name"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_date }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}date"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_individual\_rating }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".a{-}icon{-}alt"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_text\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}text{-}content span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  product\_title\_of\_review }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}title span"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}}\NormalTok{ webpage }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_nodes}\NormalTok{(}\StringTok{".review{-}data span.a{-}size{-}mini.a{-}color{-}state.a{-}text{-}bold"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{html\_text}\NormalTok{(}\AttributeTok{trim =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  verified\_purchase }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(verified\_purchase }\SpecialCharTok{==} \StringTok{"Verified Purchase"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{, }\StringTok{"No"}\NormalTok{)}
+  
+\NormalTok{  min\_length }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}
+    \FunctionTok{length}\NormalTok{(product\_reviewers),}
+    \FunctionTok{length}\NormalTok{(product\_date),}
+    \FunctionTok{length}\NormalTok{(product\_individual\_rating),}
+    \FunctionTok{length}\NormalTok{(product\_text\_review),}
+    \FunctionTok{length}\NormalTok{(product\_title\_of\_review),}
+    \FunctionTok{length}\NormalTok{(verified\_purchase)}
+\NormalTok{  )}
+  
+  \ControlFlowTok{if}\NormalTok{ (min\_length }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+    \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{Product\_Name =}\NormalTok{ product\_name[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Reviewers =}\NormalTok{ product\_reviewers[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Date =}\NormalTok{ product\_date[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Individual\_Rating =}\NormalTok{ product\_individual\_rating[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Text\_Review =}\NormalTok{ product\_text\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Title\_of\_Review =}\NormalTok{ product\_title\_of\_review[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{Verified\_Purchase =}\NormalTok{ verified\_purchase[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{min\_length],}
+      \AttributeTok{stringsAsFactors =} \ConstantTok{FALSE}
+\NormalTok{    )[}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{min}\NormalTok{(}\DecValTok{20}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(data.frame)), ])}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \ConstantTok{NULL}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (url }\ControlFlowTok{in}\NormalTok{ urls) \{}
+\NormalTok{  product\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{scrape\_reviews}\NormalTok{(url)}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{is.null}\NormalTok{(product\_reviews)) \{}
+\NormalTok{    all\_reviews }\OtherTok{\textless{}{-}} \FunctionTok{append}\NormalTok{(all\_reviews, }\FunctionTok{list}\NormalTok{(product\_reviews))}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \FunctionTok{cat}\NormalTok{(}\StringTok{"Failed to scrape URL:"}\NormalTok{, url, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{final\_reviews\_in\_CP }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(all\_reviews)}
+
+
+\FunctionTok{View}\NormalTok{(final\_reviews\_in\_CP)}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{head}\NormalTok{(final\_reviews\_in\_CP))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                                                           Product_Name
+## 1...1 Moto G Play | 2024 | Unlocked | Made for US 4/64GB | 50MP Camera | Sapphire Blue
+## 2...2                                                                                 
+## 3...3                                                                             <NA>
+## 4...4                                                                             <NA>
+## 5...5                                                                             <NA>
+## 6...6                                                                             <NA>
+##                       Reviewers
+## 1...1 How to switch from iPhone
+## 2...2                          
+## 3...3                          
+## 4...4                          
+## 5...5                          
+## 6...6                          
+##                                                    Date
+## 1...1 Reviewed in the United States on October 30, 2024
+## 2...2    Reviewed in the United States on June 15, 2024
+## 3...3      Reviewed in the United States on May 8, 2024
+## 4...4    Reviewed in the United States on July 14, 2024
+## 5...5  Reviewed in the United States on October 7, 2024
+## 6...6           Reviewed in Canada on November 13, 2024
+##                                 Individual_Rating
+## 1...1                          4.0 out of 5 stars
+## 2...2 Previous page of related Sponsored Products
+## 3...3     Next page of related Sponsored Products
+## 4...4                          4.0 out of 5 stars
+## 5...5                          3.9 out of 5 stars
+## 6...6                          4.0 out of 5 stars
+##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   Text_Review
+## 1...1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Obviously the price was great, does not feel like a low budget phone.  Pretty speedy, and response full.OS got the upgrade 1 month in. The camera is decent, the audio speakers sound very good.  I can't complain about the display either.Great value/performance.Ok there is one thing, but honestly, I can live with our itUnlock other moto phones, this is missing the twist feature that opens up the camera.And that's it, that my only gripe...ha ha a software feature because the gyroscope hardware is not present.  Also does not have two features that have never used, but at the price I bought this for, would not expect.  NFC and wireless charging.
+## 2...2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       I have hated almost every phone I have ever had. While I recognize the need to have a smartphone today, they are overpriced and underperforming and full of useless features that make them less useful and only look good on the spec sheet. That being said, I actually like this phone. It is not perfect. It has a little bit of lag and its camera does not compete with the average flagship model, but at $130, its value far outshines phones that are more expensive. I think what I really like about this phone is that it performs more than adequately and I don't feel like I'm being fleeced by the manufacturer. If you are a conspicuous consumer, by all means give your hard earned money to Samsung or Apple or Google. If you want good value for your money though, give this phone a shot.
+## 3...3 How many apps do you think you have on your phone? 40? 50? how about your phone from 2 or 3 years ago? 15-20 tops? LOL  ah, yes the days when we got excited to get a few free apps or games on our new phones... alas those days are OVER bro! get you a variation of the moto g device family. Out of the box, she is pretty amazing. I didn't have a single complaint really. Super fast, tons of storage, great camera, new updated apps, lots of customizing, etc. JUST WONDERFUL. After a few months it happened, the dreaded update in April I think it was, maybe March, I now have 400+ apps. (I will attach a pic, it shows 399, there have been about 30-40 more that have trickled in since the initial dump, which took about 5-7 days to finish up... and 75-80% are "system apps" (bloatware from any and every carrier in fact.... ALL. OF. THEM.) For example, a bluetooth app for t-mobile, & verizon, & sprint, & metro, && cricket. Before you say, "just uninstall them and move on!" - I did. I have. I've factory reset twice and they're just BUILT INTO THE phones disk memory. There simply is no "delete" them. Some of them, as duplicatory as they are, messing around with them can still brick up your jawn within a few clicks... and before you even start, you are not a dev... so chill, I mean neither am I... but you just stay out of that menu, that app, and that folder. Really, who knows why they name everything in tech sketchy stuff like "com.sys.IM-WATCHING-YOU-PAM.000" and "<%real/secret/23-LISTENER999>... but anyways... JUST PROMISE ME, YOU WON'T GET INTO THAT APP, OR FOLDER.... okay?So Motorola should reimburse me for having to put myself through IT school to teach myself to operate on this phones guts and remove all these garbage apps manually to create the phone I thought I purchased. All you can do is force stop and disable them. Buuut I still feel like they are gathering data, bc, why wound't they be. Its not just this model either, my partner has the moto g stylus 5g and its even worse on theirs. the play store basically never gets a break from constant updates (and then theres the transferring of precious data to the mother ship)yeaaaa we also had to upgrade our home internet plan and router because of all this. We couldn't both use the wifi at the same time doing anything at all. it was crazy. allllllso the apps are gathering intense amounts of data and ALL WANT crazy permissions that have nothing to do with the app itself. like the calculator wants camera permissions... nuts. The sheer number of apps that require making system changes or having total device control... it was too much. I would almost ask for a refund, but from what I see these days most phones are leaning that direction, making money off our god given ones and zeros.... and then still try and look at us in the eyes while they sputter out the retail price of the next generation of your favorite device. can't even hold it down on a free case or something..THEN - - when you finally get a break from force quitting and removing permissions that, somehow keep TURNING BACK on... you might have a few minutes to enjoy a quick photoshoot. NOPE. the camera app it comes with stinks, it just soooo basic.. so then you think, oh, i'll download a cool camera app off play store... NOPE. theres a fricking governor on the camera. That makes it so NO 3rd party camera app will get full usage of ALL THE MEGA PIXELS YOU PAID YOUR HARD EARNED MONEY FOR (48 megs to be precise, which is overkill, but still, you will be lucky to get to use 10 or 12 MP!!)Seriously. And JUST as google starts conveniently implementing the awesome 2 step verification, and authentication keys.... JUST in time for you to have to answer to your wife about why you don't have as much info in your google takeout as she does... yikes... oh and squeeze on some more of that exact same conversation about your FB activity as well.. yaaaaay.So, let me get this straight... I now have to REMEMBER ALL MY UNIQUE PASSWORDS && double log in, && verify 3 ways, all to check a notification thats just a promotional email about the new apps GEWG will put out next week. AND then FINALLY the google security come forward to say they don't trust my log in (bc i've got a VPN) - - - (from guess who - G1 - duh!) and they really cant tell the difference between MY REAL actual login on my trusted device from what it must assume is a HAKKr logging in 3 states away. . . . . . E.V.E.R.Y. LOG - INNNN!at this point i am thinking about a jitterbug and some stress eating of sour worms to relax.but yeah the phones cool, other than that.
+## 4...4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            I received this yesterday and have tried it out for nearly 24 hours now. I will be using this as a back up phone.The pluses.Nice big clear and bright screen.I like the case and the color. It looks and feel quite decent,Good, responsive touchscreen with good colors.Good wifi and bluetooth. On screen keyboard is also easy to use.Large battery, I charged it to 100 % last night and its still at 70%Good sound quality and fairly loud speakers.Negatives.There is some lag but that is in comparison to my “high end” main phone but I consider it to be more than acceptable.The cameras have great colors are appear to be over processed.If this was for use as my main shooter, it  would not be acceptable but for the bargain price, and considering that this is  budget phone, both front and rear cameras will suffice.Not too keen on the side finger print reader, it does work and actually responds quite fast, I don’t care for the location.So as a budget back up phone, there are some negatives but I can live with them all.Not; the first two photos were taken with the rear came at high resolution. The third was taken with the front facing camera. The last two were taken indoors in a restaurant setting on high resolution.I quite like this phone. I had been considering a 5 year old phone for a back up…. It still had really good specs but I was concerned about the battery and how much longer it would work. Also there would not be any security updates on an older phone but this is from 2024 and has already done several updates since I first powered it on, and it is due to be upgraded to Android 14 later this summer. ( I mention this because there are surely other folks looking for a budget back up phone.)Also, since I don’t play any games, I cant offer any opinions in that respect.For a back up phone, its ideal and I recommend it!
+## 5...5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           A very premium feeling and looking phone for the price. Even for a few hundred more dollars it would feel like a steal. Some applications and games ran a bit slow, but that's to be expected with a phone in this price range. If you don't need the most powerful phone and only really plan to browse social media, text, and make phone calls, this is the phone for you.
+## 6...6                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               very good
+##                                          Title_of_Review Verified_Purchase
+## 1...1                                 5.0 out of 5 stars               Yes
+## 2...2                                                                  Yes
+## 3...3 Great option , to not get hit hard on your wallet.               Yes
+## 4...4                                 5.0 out of 5 stars               Yes
+## 5...5                                                                  Yes
+## 6...6                            Best bang for your buck               Yes
+\end{verbatim}
+
+\end{document}

@@ -3,6 +3,7 @@ title: "Sentiment Analysis"
 author: "Barrientos, Delfin, Infiesto"
 date: "2024-11-28"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -10,13 +11,14 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 ```{r}
 library(readxl)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(stringr)
-library(syuzhet) 
+library(syuzhet)
 
 tweetsDF <- read_excel("C:/PROJ/tweetsDF.xlsx")
 
@@ -42,6 +44,13 @@ tweetsDF <- tweetsDF %>%
 
 
   str(tweetsDF)
+  
+  # number of tweets over time
+tweets_trend <- tweetsDF %>%
+  mutate(date = as.Date(created_at)) %>%
+  group_by(date) %>%
+  summarise(tweet_count = n())
+
   # Trend Analysis
   # number of tweets over time
 ggplot(tweets_trend, aes(x = date, y = tweet_count)) +
@@ -126,6 +135,8 @@ print(sentiment_plot)
 
 ```
 The graph titled "Sentiment Analysis of Tweets Over Time" shows the daily trends for Average Sentiment, Positive Tweets, and Negative Tweets. 
+
+
 
 
 

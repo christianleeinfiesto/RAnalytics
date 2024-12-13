@@ -7,7 +7,6 @@ output: pdf_document
 #Extracting TV Shows Reviews
 
 #1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
-#It will also include the number of user reviews and the number of critic reviews, as well as the popularity rating for each tv shows.
 
 ```{r}
 library(polite)
@@ -20,21 +19,25 @@ url <- "https://www.imdb.com/chart/toptv/?sort=rank%2Casc"
 session <- bow(url, user_agent = "Educational")
 session
 
+
 title_elements <- read_html(url) %>%
   html_nodes('.ipc-title__text') %>%
   html_text()
 
-titles_df <- as.data.frame(title_elements[3:52], stringsAsFactors = FALSE)
+titles_df <- as.data.frame(title_elements[3:27], stringsAsFactors = FALSE)
 colnames(titles_df) <- "Ranked_Titles"
+
 
 split_titles <- strsplit(as.character(titles_df$Ranked_Titles), "\\.", fixed = FALSE)
 titles_split_df <- data.frame(do.call(rbind, split_titles), stringsAsFactors = FALSE)
 
+
 colnames(titles_split_df) <- c("Rank", "Title")
-titles_split_df <- titles_split_df %>% select(Rank, Title)
 titles_split_df$Title <- trimws(titles_split_df$Title)
 
 rank_title <- titles_split_df
+rank_title
+
 
 rating_elements <- read_html(url) %>%
   html_nodes('.ipc-rating-star--rating') %>%
@@ -44,6 +47,13 @@ voter_elements <- read_html(url) %>%
   html_nodes('.ipc-rating-star--voteCount') %>%
   html_text()
 voters_cleaned <- gsub('[()]', '', voter_elements)
+
+
+episode_elements <- read_html(url) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_text()
+episodes_cleaned <- gsub('[eps]', '', episode_elements)
+episodes_count <- as.numeric(episodes_cleaned)
 
 episode_elements <- read_html(url) %>%
   html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
@@ -55,14 +65,24 @@ years <- read_html(url) %>%
   html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(1)') %>%
   html_text()
 
+min_length <- min(nrow(rank_title), length(rating_elements), length(voters_cleaned), length(episodes_count), length(years))
+
+
+rank_title <- rank_title[1:min_length, ]
+rating_elements <- rating_elements[1:min_length]
+voters_cleaned <- voters_cleaned[1:min_length]
+episodes_count <- episodes_count[1:min_length]
+years <- years[1:min_length]
+
 top_tv_shows <- data.frame(
-  Rank = rank_title[,1],
-  Title = rank_title[,2],
+  Rank = rank_title$Rank,
+  Title = rank_title$Title,
   Rating = rating_elements,
   Voters = voters_cleaned,
   Episodes = episodes_count,
   Year = years
 )
+
 
 home_link <- 'https://www.imdb.com/chart/toptv/'
 main_page_html <- read_html(home_link)
@@ -108,33 +128,39 @@ final_shows_df <- cbind(top_tv_shows, show_details_df)
 print(final_shows_df)
 View(final_shows_df)
 
+```
 
-#3. Create a time series graph for the tv shows released by year. Which year has the most number of tv shows released? 
+```{r}
+#2. 
+library(rvest)
+library(dplyr)
 
-shows_by_year <- top_tv_shows %>%
-  group_by(Year) %>%
-  summarise(Count = n()) %>%
-  arrange(Year)
+url_5shows <- c(
+  "https://www.imdb.com/title/tt0903747/reviews/?ref_=ttexr_ql_2",
+  "https://www.imdb.com/title/tt2098220/?ref_=chttvtp_t_33",
+  "https://www.imdb.com/title/tt2861424/?ref_=chttvtp_t_17",
+  "https://www.imdb.com/title/tt2560140/?ref_=chttvtp_t_23",
+  "https://www.imdb.com/title/tt11126994/?ref_=chttvtp_t_25"
+)
 
-ggplot(shows_by_year, aes(x = Year, y = Count, group = 1)) +
-  geom_line(color = "black", size = 1) +
-  geom_point(color = "red", size = 3) +
-  labs(
-    title = "Number of TV Shows Released by Year",
-    x = "Year",
-    y = "Number of TV Shows"
-  ) +
-  theme_minimal()
-
-max_shows_year <- shows_by_year %>%
-  filter(Count == max(Count))
-
-print(max_shows_year)
-
-
-
-
+five_df <- data.frame(
+  Title = c(
+    "Breaking Bad",
+    "Hunter x Hunter",
+    "Rick and Morty",
+    "Attack on Titan", 
+    "Arcane"
+  ),
+  URLs = url_5shows
+) 
 
 
 ```
+```{r}
+#3. 
+
+library(ggplot2)
+
+```
+
 
